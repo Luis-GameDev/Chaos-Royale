@@ -10,6 +10,10 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
+*/Library/*
+*/Temp/*
+*/Logs/*
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
@@ -71,3 +75,15 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+*.meta
+*.asset
+*.graph
+*.payloads
+*.outputdata
+*.outputdata
+*.dag
+*.unity
+*.json
+*.dag_derived
+*.dag_fsmtime
+*.rsp
