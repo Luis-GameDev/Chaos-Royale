@@ -1,18 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Healer : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+public class Healer : Character
+{   
+
+    [Header("Stats")]
+    [SerializeField] private string _name;
+    [SerializeField] private int _health;
+    [SerializeField] private float _movementSpeed;
+    [SerializeField] private List<Ability> _abilities;
+
+    public void Start() {
+        Agent = GetComponent<NavMeshAgent>();
+        Name = _name;
+        MovementSpeed = _movementSpeed;
+        Health = _health;
+        Abilities = _abilities;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
+        Agent.speed = MovementSpeed;
+    }
+
+    public Healer() {
         
     }
 }

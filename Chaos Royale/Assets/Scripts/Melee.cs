@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Melee : Character
 {   
@@ -12,15 +13,19 @@ public class Melee : Character
     [SerializeField] private float _movementSpeed;
     [SerializeField] private List<Ability> _abilities;
 
-    public Melee() {
+    public void Start() {
+        Agent = GetComponent<NavMeshAgent>();
         Name = _name;
         MovementSpeed = _movementSpeed;
         Health = _health;
         Abilities = _abilities;
     }
 
-    public override void UseAbility(int index)
-    {
-        throw new NotImplementedException();
+    void Update() {
+        Agent.speed = MovementSpeed;
+    }
+
+    public Melee() {
+        
     }
 }
