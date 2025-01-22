@@ -79,7 +79,6 @@ public class PlayerHighlight : MonoBehaviour
             {
                 if (materials[i].shader == outlineMaterial.shader)
                 {
-                    Debug.Log("Applying outline to: " + target.name);
                     materials[i].SetInt("_Enabled", 1); 
                     targetRenderer.materials = materials;  
                     break;
@@ -100,7 +99,6 @@ public class PlayerHighlight : MonoBehaviour
             {
                 if (materials[i].shader == outlineMaterial.shader)
                 {
-                    Debug.Log("Restoring original material to: " + target.name);
                     materials[i].SetInt("_Enabled", 0); 
                     targetRenderer.materials = materials;  
                     break;
