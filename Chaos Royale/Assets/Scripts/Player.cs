@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera cam;
     void Update()
     {
-        if (Input.GetMouseButtonDown(1)) // 1 ist die rechte Maustaste
+        if (Input.GetMouseButton(1)) // 1 ist die rechte Maustaste
         {
             Vector3 cursorWorldPosition = GetCursorWorldPosition();
 
