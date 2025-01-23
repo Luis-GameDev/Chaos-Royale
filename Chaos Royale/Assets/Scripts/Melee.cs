@@ -41,7 +41,6 @@ public class Melee : Character
 
         if(Input.GetKeyDown(KeyCode.Q) && globalCooldownLeft <= 0) {
             UseAbility(0);
-            TakeDamage(10);
         }
         if(Input.GetKeyDown(KeyCode.W) && globalCooldownLeft <= 0) {
             UseAbility(1);

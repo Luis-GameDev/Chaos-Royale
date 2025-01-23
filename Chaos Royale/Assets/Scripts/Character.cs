@@ -19,6 +19,7 @@ public abstract class Character : MonoBehaviour {
     public Image HPbar { get; set; }
 
     public void UseAbility(int index) {
+        Debug.Log("Using ability " + index);
         Abilities[index].Use(this.gameObject);
     }  
     public virtual void Move(Vector3 destination) { 
