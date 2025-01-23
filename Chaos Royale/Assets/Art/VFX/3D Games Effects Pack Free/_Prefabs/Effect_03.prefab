@@ -106,7 +106,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
   randomSeed: 0
@@ -4744,7 +4744,7 @@ GameObject:
   m_Component:
   - component: {fileID: 400004}
   - component: {fileID: 10800000}
-  - component: {fileID: 4127387840986197723}
+  - component: {fileID: 3123770219849488079}
   m_Layer: 0
   m_Name: Point light
   m_TagString: Untagged
@@ -4829,7 +4829,7 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &4127387840986197723
+--- !u!114 &3123770219849488079
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

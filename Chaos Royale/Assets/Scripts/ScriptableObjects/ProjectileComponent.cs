@@ -5,12 +5,12 @@ using UnityEngine;
 public class ProjectileComponent : MonoBehaviour
 {
     public bool isStatic = false;
-    public bool isPiercing = true;
+    public bool isPiercing = false;
     public int damage = 100;
     public float speed = 3.0f;
     public float range = 10.0f;
     public float lifetime = 15.0f;
-    public Vector2 direction = Vector2.zero;
+    public Vector3 direction = Vector3.zero;
     public Vector3 startPosition;
 
     private void Awake() {
@@ -23,16 +23,17 @@ public class ProjectileComponent : MonoBehaviour
         if(lifetime <= 0) {
             Destroy(gameObject);
         }
-        if (!isStatic && direction != Vector2.zero) {
-            transform.position += new Vector3(direction.x, direction.y, 0) * speed * Time.deltaTime;
+        if (!isStatic && direction != Vector3.zero) {
+
             if (Vector3.Distance(startPosition, transform.position) < range) {
-                transform.position += new Vector3(direction.x, direction.y, 0) * speed * Time.deltaTime;
+                transform.position += direction * speed * Time.deltaTime;
             }
         }
     }
 
     void OnTriggerEnter(Collider other) {
         if(other.gameObject.tag == "Player") {
+            Debug.Log("Hit player: " + other.gameObject);
             other.gameObject.GetComponent<Character>().TakeDamage(damage);
             if (!isPiercing) {
                 Destroy(gameObject);

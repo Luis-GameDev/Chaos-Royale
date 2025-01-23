@@ -17,9 +17,12 @@ public abstract class Character : MonoBehaviour {
     public float globalCooldown = 5.0f; 
     public float globalCooldownLeft { get; set; }
     public Image HPbar { get; set; }
+    public float ability0Cooldown = 0f;
+    public float ability1Cooldown = 0f;
+    public float ability2Cooldown = 0f;
+    public float ability3Cooldown = 0f;
 
     public void UseAbility(int index) {
-        Debug.Log("Using ability " + index);
         Abilities[index].Use(this.gameObject);
     }  
     public virtual void Move(Vector3 destination) { 

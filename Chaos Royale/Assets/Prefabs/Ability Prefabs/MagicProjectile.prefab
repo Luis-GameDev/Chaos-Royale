@@ -73,7 +73,7 @@ MonoBehaviour:
   speed: 10
   range: 10
   lifetime: 5
-  direction: {x: 0, y: 0}
+  direction: {x: 0, y: 0, z: 0}
   startPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &7744357866622872238
 PrefabInstance:
@@ -126,6 +126,18 @@ PrefabInstance:
     - target: {fileID: 400002, guid: c17698f595aa942cab4326f0ffaf25c2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: c17698f595aa942cab4326f0ffaf25c2, type: 3}
+      propertyPath: prewarm
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: c17698f595aa942cab4326f0ffaf25c2, type: 3}
+      propertyPath: simulationSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: c17698f595aa942cab4326f0ffaf25c2, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: c17698f595aa942cab4326f0ffaf25c2, type: 3}
       propertyPath: m_CastShadows

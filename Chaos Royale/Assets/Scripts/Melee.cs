@@ -36,6 +36,11 @@ public class Melee : Character
             globalCooldownLeft = 0;
         }
 
+        ability0Cooldown -= Time.deltaTime;
+        ability1Cooldown -= Time.deltaTime;
+        ability2Cooldown -= Time.deltaTime;
+        ability3Cooldown -= Time.deltaTime;
+
         //Debug.Log(globalCooldownLeft);
 
 

@@ -10,21 +10,15 @@ public class Lightningstrike : Ability
     private Character character;
     [SerializeField] private GameObject projectilePrefab;
 
-    private void Update() {
-        if(CooldownLeft > 0) {
-            CooldownLeft -= Time.deltaTime;
-        } else {
-            CooldownLeft = 0;
-        }
-    }
     public override void Use(GameObject caster) {
-        Debug.Log("Using Lightningstrike");
+        
         character = caster.GetComponent<Character>();
-        if(character.CanMove && character.globalCooldownLeft <= 0 && CooldownLeft <= 0) {
+
+        if(character.CanMove && character.globalCooldownLeft <= 0 && character.ability0Cooldown <= 0) {
             character.globalCooldownLeft = character.globalCooldown;
             character.CanMove = false;
-            CooldownLeft = Cooldown;
-            caster.GetComponent<MonoBehaviour>().StartCoroutine(waitCast());
+            character.ability0Cooldown = Cooldown;
+            character.StartCoroutine(waitCast());
         }
     }
 
@@ -34,14 +28,19 @@ public class Lightningstrike : Ability
     }
 
     private void Execute() {
-        Debug.Log("Lightningstrike executed");
         character.CanMove = true;
         GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
 
         ProjectileComponent projectileScript = projectile.GetComponent<ProjectileComponent>();
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0; // Ensure the z-coordinate is zero since directions are processed in 2D
-        Vector3 direction = (mousePosition - character.transform.position).normalized;
-        projectileScript.direction = direction;
+        Camera mainCam = GameObject.FindGameObjectWithTag("MainCam").GetComponent<Camera>();
+        
+        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+        Plane plane = new Plane(Vector3.up, character.transform.position);
+        if (plane.Raycast(ray, out float distance)) {
+            Vector3 mousePosition = ray.GetPoint(distance);
+            Vector3 direction = (mousePosition - character.transform.position).normalized;
+            direction.y = 0; // Ensure no vertical movement
+            projectileScript.direction = direction;
+        }
     }
 }

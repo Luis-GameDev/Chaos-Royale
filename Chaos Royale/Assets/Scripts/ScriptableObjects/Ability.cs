@@ -8,8 +8,13 @@ public class Ability : ScriptableObject
     public float CooldownLeft = 0;
     [SerializeField] private Sprite Icon;
     [SerializeField] public float CastTime;
+    public Camera mainCam;
 
     public virtual void Use(GameObject caster) {
+
+    }
+
+    public virtual void UpdateCooldown() {
 
     }
 }
