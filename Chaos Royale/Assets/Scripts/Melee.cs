@@ -15,8 +15,6 @@ public class Melee : Character
     [SerializeField] private float _movementSpeed = 3f;
     [SerializeField] private List<Ability> _abilities;
     [SerializeField] private Image _hpBar;
-    [SerializeField] private Player _player;
-
 
     public void Awake() {
         Agent = GetComponent<NavMeshAgent>();
@@ -27,7 +25,7 @@ public class Melee : Character
         Abilities = _abilities;
         CanMove = true;
         HPbar = _hpBar;
-        player = _player;
+        player = GetComponent<Player>();
     }
 
     void Update() {

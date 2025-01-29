@@ -28,9 +28,9 @@ public class Aetheruption : Ability
     }
 
     private void Execute() {
-        Debug.Log(character.player);
         character.CanMove = true;
-        Vector3 explosionPosition = character.player.GetCursorWorldPosition();
-        Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
+        Vector3 position = character.player.GetCursorWorldPosition();
+        position.y += 1.0f; 
+        Instantiate(explosionPrefab, position, Quaternion.identity);
     }
 }

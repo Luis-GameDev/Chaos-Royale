@@ -33,7 +33,6 @@ public class ProjectileComponent : MonoBehaviour
 
     void OnTriggerEnter(Collider other) {
         if(other.gameObject.tag == "Player") {
-            Debug.Log("Hit player: " + other.gameObject);
             other.gameObject.GetComponent<Character>().TakeDamage(damage);
             if (!isPiercing) {
                 Destroy(gameObject);

@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2659372843081068163}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30.820997, y: 3.0270798, z: 25.62048}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -49,8 +49,8 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 2.24
@@ -67,6 +67,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fbc1bd308dbf5d45954b24e3d63be32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 150
+  lifetime: 2
 --- !u!1001 &7252929474482454964
 PrefabInstance:
   m_ObjectHideFlags: 0
