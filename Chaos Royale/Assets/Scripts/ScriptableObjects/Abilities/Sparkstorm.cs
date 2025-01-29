@@ -24,15 +24,15 @@ public class Sparkstorm : Ability
 
     private IEnumerator waitCast() {
         yield return new WaitForSeconds(CastTime);
-        Execute();
+        character.StartCoroutine(Execute());
     }
 
-    private void Execute() {
+    private IEnumerator Execute() {
         character.CanMove = true;
         for (int i = 0; i < 6; i++) {
             GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
             projectile.GetComponent<ProjectileComponent>().direction = Quaternion.Euler(0, i * 60, 0) * Vector3.forward;
-        
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }
