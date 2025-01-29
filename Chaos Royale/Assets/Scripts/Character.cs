@@ -21,6 +21,7 @@ public abstract class Character : MonoBehaviour {
     public float ability1Cooldown = 0f;
     public float ability2Cooldown = 0f;
     public float ability3Cooldown = 0f;
+    public Player player;
 
     public void UseAbility(int index) {
         Abilities[index].Use(this.gameObject);
@@ -31,7 +32,7 @@ public abstract class Character : MonoBehaviour {
         } 
     }
 
-    public void TakeDamage(int damage) {
+    public virtual void TakeDamage(int damage) {
         
         if (Health - damage > 0) {
             Health -= damage;

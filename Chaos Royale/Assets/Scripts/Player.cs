@@ -17,9 +17,22 @@ public class Player : MonoBehaviour
                 character.Move(cursorWorldPosition);
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.Q) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(0);
+        }
+        if(Input.GetKeyDown(KeyCode.W) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(1);
+        }
+        if(Input.GetKeyDown(KeyCode.E) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(2);
+        }
+        if(Input.GetKeyDown(KeyCode.R) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(3);
+        }
     }
 
-    Vector3 GetCursorWorldPosition()
+    public Vector3 GetCursorWorldPosition()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition); 
         RaycastHit hit;

@@ -9,7 +9,7 @@ public class ProjectileComponent : MonoBehaviour
     public int damage = 100;
     public float speed = 3.0f;
     public float range = 10.0f;
-    public float lifetime = 15.0f;
+    public float lifetime = 1.0f;
     public Vector3 direction = Vector3.zero;
     public Vector3 startPosition;
 

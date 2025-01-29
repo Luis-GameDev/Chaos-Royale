@@ -15,6 +15,7 @@ public class Melee : Character
     [SerializeField] private float _movementSpeed = 3f;
     [SerializeField] private List<Ability> _abilities;
     [SerializeField] private Image _hpBar;
+    [SerializeField] private Player _player;
 
 
     public void Awake() {
@@ -26,6 +27,7 @@ public class Melee : Character
         Abilities = _abilities;
         CanMove = true;
         HPbar = _hpBar;
+        player = _player;
     }
 
     void Update() {
@@ -42,20 +44,6 @@ public class Melee : Character
         ability3Cooldown -= Time.deltaTime;
 
         //Debug.Log(globalCooldownLeft);
-
-
-        if(Input.GetKeyDown(KeyCode.Q) && globalCooldownLeft <= 0) {
-            UseAbility(0);
-        }
-        if(Input.GetKeyDown(KeyCode.W) && globalCooldownLeft <= 0) {
-            UseAbility(1);
-        }
-        if(Input.GetKeyDown(KeyCode.E) && globalCooldownLeft <= 0) {
-            UseAbility(2);
-        }
-        if(Input.GetKeyDown(KeyCode.R) && globalCooldownLeft <= 0) {
-            UseAbility(3);
-        }
     }
 
     public Melee() {

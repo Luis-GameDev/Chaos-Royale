@@ -72,7 +72,7 @@ MonoBehaviour:
   damage: 100
   speed: 10
   range: 10
-  lifetime: 5
+  lifetime: 1.2
   direction: {x: 0, y: 0, z: 0}
   startPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &7744357866622872238
