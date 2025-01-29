@@ -20,15 +20,19 @@ public class Player : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Q) && character.globalCooldownLeft <= 0) {
             character.UseAbility(0);
+            character.combatTimeLeft = character.combatTime;
         }
         if(Input.GetKeyDown(KeyCode.W) && character.globalCooldownLeft <= 0) {
             character.UseAbility(1);
+            character.combatTimeLeft = character.combatTime;
         }
         if(Input.GetKeyDown(KeyCode.E) && character.globalCooldownLeft <= 0) {
             character.UseAbility(2);
+            character.combatTimeLeft = character.combatTime;
         }
         if(Input.GetKeyDown(KeyCode.R) && character.globalCooldownLeft <= 0) {
             character.UseAbility(3);
+            character.combatTimeLeft = character.combatTime;
         }
     }
 

@@ -14,13 +14,16 @@ public abstract class Character : MonoBehaviour {
     public List<Ability> Abilities { get; set; }
     public NavMeshAgent Agent { get; set; }
     public bool CanMove { get; set; }
-    public float globalCooldown = 5.0f; 
     public float globalCooldownLeft { get; set; }
     public Image HPbar { get; set; }
+    public float combatTime { get; set; }
     public float ability0Cooldown = 0f;
     public float ability1Cooldown = 0f;
     public float ability2Cooldown = 0f;
     public float ability3Cooldown = 0f;
+    public float globalCooldown = 5.0f; 
+    public float combatTimeLeft = 0f;
+    
     public Player player;
 
     public void UseAbility(int index) {
@@ -33,12 +36,23 @@ public abstract class Character : MonoBehaviour {
     }
 
     public virtual void TakeDamage(int damage) {
+        combatTimeLeft = combatTime;
         
         if (Health - damage > 0) {
             Health -= damage;
         } else {
             Health = 0;
-            // trigger death here
+            Destroy(gameObject);
+        }
+
+        HPbar.fillAmount = (float)Health / MaxHealth;
+    }
+
+    public virtual void Heal(int health) {
+        if (Health + health < MaxHealth) {
+            Health += health;
+        } else {
+            Health = MaxHealth;
         }
 
         HPbar.fillAmount = (float)Health / MaxHealth;

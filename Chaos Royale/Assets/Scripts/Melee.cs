@@ -15,6 +15,7 @@ public class Melee : Character
     [SerializeField] private float _movementSpeed = 3f;
     [SerializeField] private List<Ability> _abilities;
     [SerializeField] private Image _hpBar;
+    [SerializeField] private float _combatTime = 10.0f;
 
     public void Awake() {
         Agent = GetComponent<NavMeshAgent>();
@@ -26,9 +27,19 @@ public class Melee : Character
         CanMove = true;
         HPbar = _hpBar;
         player = GetComponent<Player>();
+        combatTime = _combatTime;
     }
 
+    void FixedUpdate() {
+        if (combatTimeLeft > 0) {
+            combatTimeLeft -= Time.deltaTime;
+        } else {
+            combatTimeLeft = 0;
+            Heal(1);
+        }
+    }
     void Update() {
+
         Agent.speed = MovementSpeed;
         if(globalCooldownLeft > 0) {
             globalCooldownLeft -= Time.deltaTime;
@@ -36,10 +47,29 @@ public class Melee : Character
             globalCooldownLeft = 0;
         }
 
-        ability0Cooldown -= Time.deltaTime;
-        ability1Cooldown -= Time.deltaTime;
-        ability2Cooldown -= Time.deltaTime;
-        ability3Cooldown -= Time.deltaTime;
+        if (ability0Cooldown > 0) {
+            ability0Cooldown -= Time.deltaTime;
+        } else {
+            ability0Cooldown = 0;
+        }
+
+        if (ability1Cooldown > 0) {
+            ability1Cooldown -= Time.deltaTime;
+        } else {
+            ability1Cooldown = 0;
+        }
+
+        if (ability2Cooldown > 0) {
+            ability2Cooldown -= Time.deltaTime;
+        } else {
+            ability2Cooldown = 0;
+        }
+
+        if (ability3Cooldown > 0) {
+            ability3Cooldown -= Time.deltaTime;
+        } else {
+            ability3Cooldown = 0;
+        }
 
         //Debug.Log(globalCooldownLeft);
     }
