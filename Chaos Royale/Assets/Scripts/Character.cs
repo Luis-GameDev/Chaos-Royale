@@ -17,6 +17,7 @@ public abstract class Character : MonoBehaviour {
     public float globalCooldownLeft { get; set; }
     public Image HPbar { get; set; }
     public float combatTime { get; set; }
+    public int teamNumber = 0;
     public float ability0Cooldown = 0f;
     public float ability1Cooldown = 0f;
     public float ability2Cooldown = 0f;
