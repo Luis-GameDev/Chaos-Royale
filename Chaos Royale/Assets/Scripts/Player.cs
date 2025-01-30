@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera cam;
     void Update()
     {
-        if (Input.GetMouseButtonDown(1)) // 1 ist die rechte Maustaste
+        if (Input.GetMouseButton(1)) // 1 ist die rechte Maustaste
         {
             Vector3 cursorWorldPosition = GetCursorWorldPosition();
 
@@ -17,17 +17,37 @@ public class Player : MonoBehaviour
                 character.Move(cursorWorldPosition);
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.Q) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(0);
+            character.combatTimeLeft = character.combatTime;
+        }
+        if(Input.GetKeyDown(KeyCode.W) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(1);
+            character.combatTimeLeft = character.combatTime;
+        }
+        if(Input.GetKeyDown(KeyCode.E) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(2);
+            character.combatTimeLeft = character.combatTime;
+        }
+        if(Input.GetKeyDown(KeyCode.R) && character.globalCooldownLeft <= 0) {
+            character.UseAbility(3);
+            character.combatTimeLeft = character.combatTime;
+        }
     }
 
-    Vector3 GetCursorWorldPosition()
+    public Vector3 GetCursorWorldPosition()
     {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition); 
-        RaycastHit hit;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
-        if (Physics.Raycast(ray, out hit)) 
+        foreach (RaycastHit hit in hits)
         {
-            return hit.point; 
+            if (hit.collider.gameObject.tag != "Player")
+            {
+                return hit.point;
+            }
         }
-        return Vector3.zero; 
+        return Vector3.zero;
     }
 }
