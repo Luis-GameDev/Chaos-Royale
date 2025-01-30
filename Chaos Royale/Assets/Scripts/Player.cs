@@ -38,13 +38,16 @@ public class Player : MonoBehaviour
 
     public Vector3 GetCursorWorldPosition()
     {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition); 
-        RaycastHit hit;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
-        if (Physics.Raycast(ray, out hit)) 
+        foreach (RaycastHit hit in hits)
         {
-            return hit.point; 
+            if (hit.collider.gameObject.tag != "Player")
+            {
+                return hit.point;
+            }
         }
-        return Vector3.zero; 
+        return Vector3.zero;
     }
 }
