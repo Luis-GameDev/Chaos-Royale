@@ -12,19 +12,6 @@ public class InvItemItemManager : MonoBehaviour
     [SerializeField] private bool isHovering = false;
     public Item item;
 
-    void Start()
-    {
-        
-    }
-    void Update()
-    {
-        /*if(isHovering) {
-            Vector3 cursorPosition = Input.mousePosition;
-            cursorPosition.z = 10.0f; 
-            tooltip.transform.position = Camera.main.ScreenToWorldPoint(cursorPosition);
-        }*/
-    }
-
     public void StartHover() {
         // todo fix: tooltip is instantiated behind lobby-canvas so it's not visible
         Debug.Log("Hovering over item");
