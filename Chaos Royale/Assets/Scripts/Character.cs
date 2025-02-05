@@ -12,6 +12,7 @@ public abstract class Character : MonoBehaviour {
     public int MaxHealth { get; set; }
     public float MovementSpeed { get; set; }
     public List<Ability> Abilities { get; set; }
+    public List<Item> Items { get; set; }
     public NavMeshAgent Agent { get; set; }
     public bool CanMove { get; set; }
     public float globalCooldownLeft { get; set; }

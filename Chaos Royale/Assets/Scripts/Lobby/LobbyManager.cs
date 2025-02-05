@@ -23,7 +23,6 @@ public class LobbyManager : MonoBehaviour
             GameObject itemSlot = Instantiate(itemPrefab, itemInvContent.transform);
             itemSlot.GetComponent<Image>().sprite = item.ItemIcon;
             itemSlot.GetComponent<InvItemItemManager>().item = item;
-            itemSlot.GetComponent<InvItemItemManager>().lobby = this.gameObject;
         }
     }
 
