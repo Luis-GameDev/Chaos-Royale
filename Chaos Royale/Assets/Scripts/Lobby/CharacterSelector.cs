@@ -49,5 +49,6 @@ public class CharacterSelector : MonoBehaviour
 
         // Update the class name text
         classNameText.text = selectedCharacter;
+        lobbyManager.CalculateStats();
     }
 }

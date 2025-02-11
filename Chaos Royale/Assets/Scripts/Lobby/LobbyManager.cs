@@ -59,7 +59,7 @@ public class LobbyManager : MonoBehaviour
         CalculateStats();
     }
 
-    void CalculateStats() {
+    public void CalculateStats() {
         // calculate the stats of the player based on the selected items
         // and update the UI with the new stats
         int totalHealth = 0;
