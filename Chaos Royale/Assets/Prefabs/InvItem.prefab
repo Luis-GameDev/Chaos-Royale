@@ -121,7 +121,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7536675581606408251}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5744550001997205358}
+        m_TargetAssemblyTypeName: InvItemItemManager, Assembly-CSharp
+        m_MethodName: Click
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5744550001997205358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,8 +148,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPrefab: {fileID: 887117838364009799, guid: b0a3122b22a3e6c47b5d460af1260b40,
     type: 3}
-  isHovering: 0
+  itemSlotItemSelector: {fileID: 0}
   item: {fileID: 0}
+  lobbyManager: {fileID: 0}
 --- !u!114 &6191002194827565912
 MonoBehaviour:
   m_ObjectHideFlags: 0

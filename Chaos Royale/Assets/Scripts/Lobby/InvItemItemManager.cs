@@ -8,12 +8,20 @@ public class InvItemItemManager : MonoBehaviour
 {
     [SerializeField] private GameObject tooltipPrefab;
     private GameObject tooltipHolder;
+    public ItemSlotItemSelector itemSlotItemSelector;
     private GameObject tooltip;
     public Item item;
+    public LobbyManager lobbyManager;
 
     void Start()
     {
         tooltipHolder = GameObject.Find("TooltipHolder");
+    }
+
+    public void Click()
+    {
+        lobbyManager.AddItemToSlot(item);
+        if(tooltip) Destroy(tooltip);
     }
 
     public void StartHover()
