@@ -6,21 +6,13 @@ public class CanvasFaceCamera : MonoBehaviour
 
     void Start()
     {
-        if (targetCamera == null)
-        {
-            targetCamera = Camera.main; 
-        }
+        //targetCamera = Camera.main; 
+        //targetCamera = Camera.current;
     }
-
-
-    public void SetCamera(Camera newCamera)
-    {
-        targetCamera = newCamera;
-    }
-
 
     void LateUpdate()
     {
+        targetCamera = Camera.current;
         if (targetCamera != null)
         {
             transform.LookAt(transform.position + targetCamera.transform.forward);

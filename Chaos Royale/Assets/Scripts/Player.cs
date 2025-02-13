@@ -29,6 +29,10 @@ public class Player : NetworkBehaviour
         }
     }
 
+    void Start() {
+        //UpdateCameras();
+    }
+
     void Update()
     {
         if(base.IsOwner) {
@@ -43,20 +47,36 @@ public class Player : NetworkBehaviour
         }
         gameObject.transform.Find("HP Bar").gameObject.SetActive(false);
 
-        ui = Instantiate(playerUI, transform.position, Quaternion.identity);
+        if(!ui) ui = Instantiate(playerUI, transform.position, Quaternion.identity);
         ui.GetComponent<UpdateCooldowns>().character = character;
-        camHold = Instantiate(cameraHolder, transform.position, Quaternion.identity);
+        if(!camHold) camHold = Instantiate(cameraHolder, transform.position, Quaternion.identity);
         camHold.GetComponent<FixCam>().cameraTransform = this.transform;
         cam = camHold.GetComponentInChildren<Camera>();
         gameObject.GetComponent<PlayerHighlight>().playerCamera = cam;
         character.HPbar = camHold.GetComponentsInChildren<Image>().FirstOrDefault(img => img.gameObject.name == "HP");
+    }
 
+    void UpdateCameras() {
+        if(!character) {
+            character = gameObject.GetComponent<Character>();
+        }
+        gameObject.transform.Find("HP Bar").gameObject.SetActive(false);
 
+        if(!ui) ui = Instantiate(playerUI, transform.position, Quaternion.identity);
+        ui.GetComponent<UpdateCooldowns>().character = character;
+        if(!camHold) {
+            camHold = Instantiate(cameraHolder, transform.position, Quaternion.identity);
+            camHold.GetComponent<FixCam>().cameraTransform = this.transform;
+        }
+        cam = camHold.GetComponentInChildren<Camera>();
+        gameObject.GetComponent<PlayerHighlight>().playerCamera = cam;
+        character.HPbar = camHold.GetComponentsInChildren<Image>().FirstOrDefault(img => img.gameObject.name == "HP");
         // set the camera for all canvas face camera scripts
         CanvasFaceCamera[] canvasFaceCameras = FindObjectsOfType<CanvasFaceCamera>();
         foreach (CanvasFaceCamera canvasFaceCamera in canvasFaceCameras)
         {
-            canvasFaceCamera.SetCamera(cam);
+            cam = camHold.GetComponentInChildren<Camera>();
+            //canvasFaceCamera.SetCamera(cam);
         }
     }
 
