@@ -26,6 +26,12 @@ public class ServerManager : NetworkBehaviour
         
     }
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        
+    }
+
     void Update()
     {
         matchTimeLeft.Value -= Time.deltaTime;

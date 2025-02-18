@@ -4,9 +4,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using FishNet;
 using FishNet.Managing;
+using FishNet.Transporting;
+using Unity.VisualScripting;
+using FishNet.Object;
 
-public class LobbyManager : MonoBehaviour
+public class LobbyManager : NetworkBehaviour
 {
     [Header("Player")]
     [SerializeField] private Item[] selectedItems = new Item[3];
@@ -20,6 +24,9 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject itemInventory;
     [SerializeField] private GameObject hostScreen;
     [SerializeField] private GameObject clientScreen;
+    [SerializeField] private GameObject serverButtons;
+    [SerializeField] private GameObject lobbyplayerPrefab;
+    [SerializeField] private GameObject lobbyplayerSelection;
     public int isSelectingItemSlotIndex = 0;
 
     [Header("Stats")]
@@ -34,6 +41,14 @@ public class LobbyManager : MonoBehaviour
         // show the item inventory and set the index to the index of the button this function was called from
         itemInventory.SetActive(true);
         isSelectingItemSlotIndex = index;
+    }
+
+    public void AddPlayerToSelection(int clientId) {
+
+    }
+    
+    public void RemovePlayerFromSelection(int clientId) {
+
     }
 
     public void AddItemToSlot(Item item) {
@@ -60,15 +75,40 @@ public class LobbyManager : MonoBehaviour
         }
 
         CalculateStats();
+    }
 
+    /*public void OnClientConnected(int clientId)
+    {
+        AddPlayerToSelection(clientId);
+    }
 
-        /*if (NetworkManager.Instance.IsServer) {
+    public void OnClientDisconnected(int clientId)
+    {
+        RemovePlayerFromSelection(clientId);
+    }*/
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        UpdateLobby();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        UpdateLobby();
+    }
+
+    public void UpdateLobby() {
+        if (InstanceFinder.IsServerStarted) {
             hostScreen.SetActive(true);
             clientScreen.SetActive(false);
+            serverButtons.SetActive(false);
         } else {
             hostScreen.SetActive(false);
             clientScreen.SetActive(true);
-        }*/
+            serverButtons.SetActive(false);
+        }
     }
 
     public void CalculateStats() {
