@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using FishNet.Managing;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -61,7 +62,7 @@ public class LobbyManager : MonoBehaviour
         CalculateStats();
 
 
-        /*if (FishNet.Managing.NetworkManager.Instance.IsServer) {
+        /*if (NetworkManager.Instance.IsServer) {
             hostScreen.SetActive(true);
             clientScreen.SetActive(false);
         } else {

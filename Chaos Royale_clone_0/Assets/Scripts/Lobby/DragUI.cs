@@ -65,7 +65,10 @@ public class DragUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             if (dropSlot != null)
             {
                 Debug.Log("Found DropSlot: " + dropSlot.name);
-                return dropSlot; 
+                if (dropSlot.transform != originalParent)
+                {
+                    return dropSlot; 
+                }
             }
         }
 
