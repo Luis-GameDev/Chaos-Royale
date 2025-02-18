@@ -17,6 +17,8 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject itemPrefab;
     [SerializeField] private GameObject[] itemSlots;
     [SerializeField] private GameObject itemInventory;
+    [SerializeField] private GameObject hostScreen;
+    [SerializeField] private GameObject clientScreen;
     public int isSelectingItemSlotIndex = 0;
 
     [Header("Stats")]
@@ -57,6 +59,15 @@ public class LobbyManager : MonoBehaviour
         }
 
         CalculateStats();
+
+
+        /*if (FishNet.Managing.NetworkManager.Instance.IsServer) {
+            hostScreen.SetActive(true);
+            clientScreen.SetActive(false);
+        } else {
+            hostScreen.SetActive(false);
+            clientScreen.SetActive(true);
+        }*/
     }
 
     public void CalculateStats() {
