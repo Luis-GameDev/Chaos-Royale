@@ -11,11 +11,12 @@ using Unity.VisualScripting;
 using FishNet.Object;
 using FishNet.Connection;
 
-public class LobbyManager : NetworkBehaviour
+public class LobbyManager : MonoBehaviour
 {
     [Header("Player")]
     [SerializeField] private Item[] selectedItems = new Item[3];
     public string selectedCharacter = "Melee";
+    public string playerName;
 
     [Header("Dependencies")]
     [SerializeField] private List<Item> items = new List<Item>();
@@ -38,9 +39,13 @@ public class LobbyManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI cdrText;
 
     [Header("Host")]
-    [SerializeField] private Dictionary<int, bool> playerReadyStatus = new Dictionary<int, bool>();
+    public List<GameObject> playersInLobby = new List<GameObject>();
+    public LobbyNetworker lobbyNetworker;
 
-
+    [Header("Login")]
+    [SerializeField] private GameObject nameInputField;
+    [SerializeField] private GameObject loggedInScreen;
+    [SerializeField] private GameObject notLoggedInScreen;
 
     public void SelectItem(int index) {
         // show the item inventory and set the index to the index of the button this function was called from
@@ -48,20 +53,86 @@ public class LobbyManager : NetworkBehaviour
         isSelectingItemSlotIndex = index;
     }
 
-    public void AddPlayerToSelection(int clientId) {
+    public void TestAddPlayer() {
+        AddPlayerToSelection(11);
+    }
 
+    public void SetUserName() {
+        if(!string.IsNullOrWhiteSpace(nameInputField.GetComponent<TMP_InputField>().text)) {
+            playerName = nameInputField.GetComponent<TMP_InputField>().text;
+            loggedInScreen.SetActive(true);
+            notLoggedInScreen.SetActive(false);
+        }
+    }
+
+    public void AddPlayerToSelection(int clientId) {
+        Debug.Log("XXXXX ");
+        GameObject player = Instantiate(lobbyplayerPrefab, lobbyplayerSelection.transform);
+        player.GetComponent<LobbyPlayer>().clientId = clientId;
+        player.GetComponent<LobbyPlayer>().SetName("Player " + clientId.ToString());
+        playersInLobby.Add(player);
+    }
+
+    public void SetReadyLM() {
+        lobbyNetworker.SetReady();
     }
     
     public void RemovePlayerFromSelection(int clientId) {
-
+        foreach(var player in playersInLobby) {
+            if(player.GetComponent<LobbyPlayer>().clientId == clientId) {
+                playersInLobby.Remove(player);
+                Destroy(player);
+            }
+        }
     }
 
-    public void SetReady()
+    /*public void SetReady()
     {
+        Debug.Log($"SetReady() called. isClientInitialized: {IsClientInitialized}, Owner: {Owner}");
+        
         if (IsClientInitialized)
         {
+            if (Owner == null)
+            {
+                Debug.LogError("Owner is NULL when calling SetPlayerReadyServerRpc!");
+                return;
+            }
+
             SetPlayerReadyServerRpc(Owner);
         }
+    }*/
+
+    public void StartHost()
+    {
+        InstanceFinder.ServerManager.StartConnection();
+        InstanceFinder.ClientManager.StartConnection();
+        Debug.Log("Host gestartet (Server + Client)");
+
+        hostScreen.SetActive(true);
+        clientScreen.SetActive(false);
+        serverButtons.SetActive(false);
+    }
+
+    public void StartClient()
+    {
+        InstanceFinder.ClientManager.StartConnection();
+        Debug.Log("Client gestartet");
+        
+        hostScreen.SetActive(false);
+        clientScreen.SetActive(true);
+        serverButtons.SetActive(false);
+    }
+
+    public void LeaveLobby() {
+        InstanceFinder.ClientManager.StopConnection();
+        if (InstanceFinder.NetworkManager.IsServerStarted)
+        {
+            InstanceFinder.ServerManager.StopConnection(true);
+            Debug.Log("Network connection stopped.");
+        }
+        hostScreen.SetActive(false);
+        clientScreen.SetActive(false);
+        serverButtons.SetActive(true);
     }
 
     public void AddItemToSlot(Item item) {
@@ -96,42 +167,14 @@ public class LobbyManager : NetworkBehaviour
     {
         if (args.ConnectionState == RemoteConnectionState.Started)
         {
-            Debug.Log($"Client {conn.ClientId} has joined the server!");
-            // Execute host-only logic here, e.g. adding a player to the lobby UI.
+            Debug.Log($"XXXXXXXXXXXXXXXXXXXXXXXXX Client {conn.ClientId} has joined the server!");
+            AddPlayerToSelection(conn.ClientId);
         }
-    }
-
-    public void StartHost()
-    {
-        InstanceFinder.ServerManager.StartConnection();
-        InstanceFinder.ClientManager.StartConnection();
-        Debug.Log("Host gestartet (Server + Client)");
-
-        hostScreen.SetActive(true);
-        clientScreen.SetActive(false);
-        serverButtons.SetActive(false);
-    }
-
-    public void StartClient()
-    {
-        InstanceFinder.ClientManager.StartConnection();
-        Debug.Log("Client gestartet");
-        
-        hostScreen.SetActive(false);
-        clientScreen.SetActive(true);
-        serverButtons.SetActive(false);
-    }
-
-    public void LeaveLobby() {
-        InstanceFinder.ClientManager.StopConnection();
-        if (InstanceFinder.NetworkManager.IsServerStarted)
+        if(args.ConnectionState == RemoteConnectionState.Stopped) 
         {
-            InstanceFinder.ServerManager.StopConnection(true);
-            Debug.Log("Network connection stopped.");
+            Debug.Log($"XXXXXXXXXXXXXXXXXXXXXXXXX Client {conn.ClientId} has left the lobby!");
+            RemovePlayerFromSelection(conn.ClientId); 
         }
-        hostScreen.SetActive(false);
-        clientScreen.SetActive(false);
-        serverButtons.SetActive(true);
     }
 
     private void OnDestroy()
@@ -211,18 +254,17 @@ public class LobbyManager : NetworkBehaviour
 
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    /*[ServerRpc(RequireOwnership = false)]
     public void SetPlayerReadyServerRpc(NetworkConnection conn)
     {
-        if (!playerReadyStatus.ContainsKey(conn.ClientId))
+        foreach (var player in playersInLobby)
         {
-            playerReadyStatus.Add(conn.ClientId, true);
+            var lobbyPlayer = player.GetComponent<LobbyPlayer>();
+            if (lobbyPlayer != null)
+            {
+                lobbyPlayer.readyStatus = true;
+                Debug.Log($"Player {lobbyPlayer.clientId} is now READY.");
+            }
         }
-        else
-        {
-            playerReadyStatus[conn.ClientId] = true;
-        }
-
-        Debug.Log($"Player {conn.ClientId} is now READY.");
-    }
+    }*/
 }
