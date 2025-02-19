@@ -9,6 +9,7 @@ using FishNet.Managing;
 using FishNet.Transporting;
 using Unity.VisualScripting;
 using FishNet.Object;
+using FishNet.Connection;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -36,6 +37,10 @@ public class LobbyManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI castTimeText;
     [SerializeField] private TextMeshProUGUI cdrText;
 
+    [Header("Host")]
+    [SerializeField] private Dictionary<int, bool> playerReadyStatus = new Dictionary<int, bool>();
+
+
 
     public void SelectItem(int index) {
         // show the item inventory and set the index to the index of the button this function was called from
@@ -49,6 +54,14 @@ public class LobbyManager : NetworkBehaviour
     
     public void RemovePlayerFromSelection(int clientId) {
 
+    }
+
+    public void SetReady()
+    {
+        if (IsClientInitialized)
+        {
+            SetPlayerReadyServerRpc(Owner);
+        }
     }
 
     public void AddItemToSlot(Item item) {
@@ -66,6 +79,8 @@ public class LobbyManager : NetworkBehaviour
 
     void Start()
     {
+        InstanceFinder.ServerManager.OnRemoteConnectionState += OnClientConnectionState;
+
         // populate the item inventory with all owned items
         foreach (Item item in items) {
             GameObject itemSlot = Instantiate(itemPrefab, itemInvContent.transform);
@@ -75,6 +90,54 @@ public class LobbyManager : NetworkBehaviour
         }
 
         CalculateStats();
+    }
+
+    private void OnClientConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
+    {
+        if (args.ConnectionState == RemoteConnectionState.Started)
+        {
+            Debug.Log($"Client {conn.ClientId} has joined the server!");
+            // Execute host-only logic here, e.g. adding a player to the lobby UI.
+        }
+    }
+
+    public void StartHost()
+    {
+        InstanceFinder.ServerManager.StartConnection();
+        InstanceFinder.ClientManager.StartConnection();
+        Debug.Log("Host gestartet (Server + Client)");
+
+        hostScreen.SetActive(true);
+        clientScreen.SetActive(false);
+        serverButtons.SetActive(false);
+    }
+
+    public void StartClient()
+    {
+        InstanceFinder.ClientManager.StartConnection();
+        Debug.Log("Client gestartet");
+        
+        hostScreen.SetActive(false);
+        clientScreen.SetActive(true);
+        serverButtons.SetActive(false);
+    }
+
+    public void LeaveLobby() {
+        InstanceFinder.ClientManager.StopConnection();
+        if (InstanceFinder.NetworkManager.IsServerStarted)
+        {
+            InstanceFinder.ServerManager.StopConnection(true);
+            Debug.Log("Network connection stopped.");
+        }
+        hostScreen.SetActive(false);
+        clientScreen.SetActive(false);
+        serverButtons.SetActive(true);
+    }
+
+    private void OnDestroy()
+    {
+        if (InstanceFinder.ServerManager != null)
+            InstanceFinder.ServerManager.OnRemoteConnectionState -= OnClientConnectionState;
     }
 
     /*public void OnClientConnected(int clientId)
@@ -87,7 +150,7 @@ public class LobbyManager : NetworkBehaviour
         RemovePlayerFromSelection(clientId);
     }*/
 
-    public override void OnStartServer()
+    /*public override void OnStartServer()
     {
         base.OnStartServer();
         UpdateLobby();
@@ -109,7 +172,7 @@ public class LobbyManager : NetworkBehaviour
             clientScreen.SetActive(true);
             serverButtons.SetActive(false);
         }
-    }
+    }*/
 
     public void CalculateStats() {
         // calculate the stats of the player based on the selected items
@@ -148,8 +211,18 @@ public class LobbyManager : NetworkBehaviour
 
     }
 
-    void Update()
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlayerReadyServerRpc(NetworkConnection conn)
     {
-        
+        if (!playerReadyStatus.ContainsKey(conn.ClientId))
+        {
+            playerReadyStatus.Add(conn.ClientId, true);
+        }
+        else
+        {
+            playerReadyStatus[conn.ClientId] = true;
+        }
+
+        Debug.Log($"Player {conn.ClientId} is now READY.");
     }
 }
