@@ -43,9 +43,16 @@ public class LobbyManager : MonoBehaviour
     public LobbyNetworker lobbyNetworker;
 
     [Header("Login")]
-    [SerializeField] private GameObject nameInputField;
+    [SerializeField] private GameObject login_nameInputField;
+    [SerializeField] private GameObject login_passwordInputfield;
     [SerializeField] private GameObject loggedInScreen;
     [SerializeField] private GameObject notLoggedInScreen;
+    [SerializeField] private DatabaseManager databaseManager;
+
+    [Header("Register")]
+    [SerializeField] private GameObject register_nameinputField;
+    [SerializeField] private GameObject register_passwordinputField;
+    [SerializeField] private GameObject register_passwordcheckinputField;
 
     public void SelectItem(int index) {
         // show the item inventory and set the index to the index of the button this function was called from
@@ -57,11 +64,27 @@ public class LobbyManager : MonoBehaviour
         AddPlayerToSelection(11);
     }
 
-    public void SetUserName() {
-        if(!string.IsNullOrWhiteSpace(nameInputField.GetComponent<TMP_InputField>().text)) {
-            playerName = nameInputField.GetComponent<TMP_InputField>().text;
+    public void Login() {
+        string username = login_nameInputField.GetComponent<TMP_InputField>().text;
+        string password = login_passwordInputfield.GetComponent<TMP_InputField>().text;
+        if(!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(password) && databaseManager.Login(username, password)) {
+            playerName = username;
             loggedInScreen.SetActive(true);
             notLoggedInScreen.SetActive(false);
+        }
+    }
+
+    public void Register() {
+        string username = register_nameinputField.GetComponent<TMP_InputField>().text;
+        string password = register_passwordinputField.GetComponent<TMP_InputField>().text;
+        string passwordcheck = register_passwordcheckinputField.GetComponent<TMP_InputField>().text;
+
+        if(!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(passwordcheck) && password == passwordcheck) {
+            if(databaseManager.Register(username, password, passwordcheck)) {
+                playerName = username;
+                loggedInScreen.SetActive(true);
+                notLoggedInScreen.SetActive(false);
+            }
         }
     }
 
@@ -150,6 +173,7 @@ public class LobbyManager : MonoBehaviour
 
     void Start()
     {
+        databaseManager = transform.GetComponent<DatabaseManager>();
         InstanceFinder.ServerManager.OnRemoteConnectionState += OnClientConnectionState;
 
         // populate the item inventory with all owned items
