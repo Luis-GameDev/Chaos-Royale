@@ -59,8 +59,8 @@ public class LobbyNetworker : NetworkBehaviour
         foreach (var player in lobbyManager.playersInLobby)
         {
             var lobbyPlayer = player.GetComponent<LobbyPlayer>();
-            if (lobbyPlayer != null)
-            {   
+            if(lobbyPlayer != null && conn.ClientId == lobbyPlayer.clientId) {
+                
                 if(lobbyPlayer.readyStatus == false) {
                     lobbyPlayer.readyStatus = true;
                     Debug.Log($"Player {lobbyPlayer.clientId} is now READY.");

@@ -96,6 +96,16 @@ public class LobbyManager : MonoBehaviour
         playersInLobby.Add(player);
     }
 
+    void Update() {
+        foreach (var player in playersInLobby) {
+            if (player.GetComponent<LobbyPlayer>().readyStatus == true) {
+                player.GetComponent<Image>().color = Color.green;
+            } else {
+                player.GetComponent<Image>().color = Color.red;
+            }
+        }
+    }
+
     public void SetReadyLM() {
         lobbyNetworker.SetReady();
     }

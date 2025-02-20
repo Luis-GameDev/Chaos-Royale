@@ -101,6 +101,42 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
+    public int GetUserID(string username, string password) {
+        string hashedPassword = HashPassword(password);
+
+        try
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string query = "SELECT ID FROM user WHERE username = @username AND password_hash = @password";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@username", username);
+                    cmd.Parameters.AddWithValue("@password", hashedPassword);
+
+                    var result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        return Convert.ToInt32(result);
+                    }
+                    else
+                    {
+                        Console.WriteLine("User not found or incorrect password.");
+                        return -1; 
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error during GetUserID: " + ex.Message);
+            return -1;  
+        }
+    }
+
     private string HashPassword(string password)
     {
         using (SHA256 sha256Hash = SHA256.Create())
