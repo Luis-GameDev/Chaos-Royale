@@ -7,20 +7,13 @@ public class LobbyPlayer : MonoBehaviour
 {
     public int clientId;
     public bool readyStatus;
+    public string username;
 
-    /*void Update()
+    void Start()
     {
-        if(readyStatus) {
-            GetComponent<Image>().color = Color.green;
-        } else {
-            GetComponent<Image>().color = Color.red;
-        }
-    }*/
-
-    public void SetName(string name) {
         var textMeshPro = GetComponentInChildren<TMPro.TextMeshProUGUI>();
         if (textMeshPro != null) {
-            textMeshPro.text = name;
+            textMeshPro.text = username;
         }
     }
 }

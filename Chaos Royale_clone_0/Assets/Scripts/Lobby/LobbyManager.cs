@@ -1,14 +1,10 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using FishNet;
-using FishNet.Managing;
 using FishNet.Transporting;
-using Unity.VisualScripting;
-using FishNet.Object;
 using FishNet.Connection;
 
 public class LobbyManager : MonoBehaviour
@@ -54,14 +50,13 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject register_passwordinputField;
     [SerializeField] private GameObject register_passwordcheckinputField;
 
+    [SerializeField] private GameObject LobbyNetworkerPrefab;
+    private GameObject LobbyNetworkerInstance;
+
     public void SelectItem(int index) {
         // show the item inventory and set the index to the index of the button this function was called from
         itemInventory.SetActive(true);
         isSelectingItemSlotIndex = index;
-    }
-
-    public void TestAddPlayer() {
-        AddPlayerToSelection(11);
     }
 
     public void Login() {
@@ -91,9 +86,18 @@ public class LobbyManager : MonoBehaviour
     public void AddPlayerToSelection(int clientId) {
         Debug.Log("XXXXX ");
         GameObject player = Instantiate(lobbyplayerPrefab, lobbyplayerSelection.transform);
+        if(lobbyNetworker) {
+            foreach(var playername in lobbyNetworker.playerNames) {
+                if(playername.Key == clientId) {
+                    player.GetComponent<LobbyPlayer>().username = playername.Value;
+                }
+                if (string.IsNullOrEmpty(player.GetComponent<LobbyPlayer>().username)) {
+                    player.GetComponent<LobbyPlayer>().username = "Player";
+                }
+            }
+        }
         player.GetComponent<LobbyPlayer>().clientId = clientId;
-        player.GetComponent<LobbyPlayer>().SetName("Player " + clientId.ToString());
-        playersInLobby.Add(player);
+        playersInLobby.Add(player);  
     }
 
     void Update() {
@@ -104,7 +108,19 @@ public class LobbyManager : MonoBehaviour
                 player.GetComponent<Image>().color = Color.red;
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.E)) {
+            PrintSyncDictionary();
+        }
     }
+
+    void PrintSyncDictionary()
+{
+    foreach (var entry in lobbyNetworker.playerNames)
+    {
+        Debug.Log($"Key: {entry.Key}, Value: {entry.Value}");
+    }
+}
 
     public void SetReadyLM() {
         lobbyNetworker.SetReady();
@@ -119,22 +135,6 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    /*public void SetReady()
-    {
-        Debug.Log($"SetReady() called. isClientInitialized: {IsClientInitialized}, Owner: {Owner}");
-        
-        if (IsClientInitialized)
-        {
-            if (Owner == null)
-            {
-                Debug.LogError("Owner is NULL when calling SetPlayerReadyServerRpc!");
-                return;
-            }
-
-            SetPlayerReadyServerRpc(Owner);
-        }
-    }*/
-
     public void StartHost()
     {
         InstanceFinder.ServerManager.StartConnection();
@@ -143,8 +143,31 @@ public class LobbyManager : MonoBehaviour
 
         hostScreen.SetActive(true);
         clientScreen.SetActive(false);
-        serverButtons.SetActive(false);
+        serverButtons.SetActive(false);     
+
+        StartCoroutine(CheckForServerStart());
     }
+
+    private IEnumerator CheckForServerStart()
+    {
+        bool Switch = false;
+
+        while(!Switch)
+        {
+            if(InstanceFinder.ServerManager.Started)
+            {
+                Switch = !Switch;
+                GameObject go = Instantiate(LobbyNetworkerPrefab);
+                LobbyNetworkerInstance = go;
+                lobbyNetworker = go.GetComponent<LobbyNetworker>();
+                lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
+                InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
 
     public void StartClient()
     {
@@ -154,6 +177,9 @@ public class LobbyManager : MonoBehaviour
         hostScreen.SetActive(false);
         clientScreen.SetActive(true);
         serverButtons.SetActive(false);
+        
+        lobbyNetworker = FindObjectOfType<LobbyNetworker>();
+        lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
     }
 
     public void LeaveLobby() {
@@ -169,13 +195,10 @@ public class LobbyManager : MonoBehaviour
     }
 
     public void AddItemToSlot(Item item) {
-        // set the selected item in the selectedItems array
         selectedItems[isSelectingItemSlotIndex] = item;
 
-        // trigger "SetItem" in the ItemSlotItemSelector script to display its icon and occupy the slot
         itemSlots[isSelectingItemSlotIndex].GetComponent<ItemSlotItemSelector>().SetItem(item);
 
-        // hide the item inventory after selecting
         itemInventory.SetActive(false);
 
         CalculateStats();
@@ -203,6 +226,9 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.Log($"XXXXXXXXXXXXXXXXXXXXXXXXX Client {conn.ClientId} has joined the server!");
             AddPlayerToSelection(conn.ClientId);
+            if(conn.IsHost) {
+                InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);
+            }
         }
         if(args.ConnectionState == RemoteConnectionState.Stopped) 
         {
@@ -216,40 +242,6 @@ public class LobbyManager : MonoBehaviour
         if (InstanceFinder.ServerManager != null)
             InstanceFinder.ServerManager.OnRemoteConnectionState -= OnClientConnectionState;
     }
-
-    /*public void OnClientConnected(int clientId)
-    {
-        AddPlayerToSelection(clientId);
-    }
-
-    public void OnClientDisconnected(int clientId)
-    {
-        RemovePlayerFromSelection(clientId);
-    }*/
-
-    /*public override void OnStartServer()
-    {
-        base.OnStartServer();
-        UpdateLobby();
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        UpdateLobby();
-    }
-
-    public void UpdateLobby() {
-        if (InstanceFinder.IsServerStarted) {
-            hostScreen.SetActive(true);
-            clientScreen.SetActive(false);
-            serverButtons.SetActive(false);
-        } else {
-            hostScreen.SetActive(false);
-            clientScreen.SetActive(true);
-            serverButtons.SetActive(false);
-        }
-    }*/
 
     public void CalculateStats() {
         // calculate the stats of the player based on the selected items
@@ -287,18 +279,4 @@ public class LobbyManager : MonoBehaviour
         cdrText.text = "CDR: " + totalCDR + "%";
 
     }
-
-    /*[ServerRpc(RequireOwnership = false)]
-    public void SetPlayerReadyServerRpc(NetworkConnection conn)
-    {
-        foreach (var player in playersInLobby)
-        {
-            var lobbyPlayer = player.GetComponent<LobbyPlayer>();
-            if (lobbyPlayer != null)
-            {
-                lobbyPlayer.readyStatus = true;
-                Debug.Log($"Player {lobbyPlayer.clientId} is now READY.");
-            }
-        }
-    }*/
 }

@@ -10,14 +10,19 @@ using FishNet.Transporting;
 using Unity.VisualScripting;
 using FishNet.Object;
 using FishNet.Connection;
+using FishNet.Object.Synchronizing;
 
 public class LobbyNetworker : NetworkBehaviour
 {
     [SerializeField] public LobbyManager lobbyManager;
+    public readonly SyncDictionary<int, string> playerNames = new SyncDictionary<int, string>();
 
-    public void Start()
+    public override void OnStartClient()
     {
+        base.OnStartClient();
+
         lobbyManager = FindObjectOfType<LobbyManager>();
+        lobbyManager.lobbyNetworker = this;
         if (lobbyManager == null)
         {
             Debug.LogError("LobbyManager not found in the scene.");
@@ -26,7 +31,19 @@ public class LobbyNetworker : NetworkBehaviour
         {
             lobbyManager.lobbyNetworker = this;
         }
+
+        //SetPlayerName(Owner);
     }
+
+    /*public void SetPlayerName(NetworkConnection conn) {
+        playerNames.Add(conn.ClientId, lobbyManager.playerName);
+        if(HasAuthority) {
+            foreach(var player in playerNames) {
+                Debug.Log("Playername: " + player.Value);
+            }
+        }
+    }*/
+
     public void SetReady()
     {
         Debug.Log($"SetReady() called. isClientInitialized: {IsClientInitialized}, Owner: {Owner}");
@@ -42,6 +59,22 @@ public class LobbyNetworker : NetworkBehaviour
             SetPlayerReadyServerRpc(Owner);
         }
     }
+
+    /*public void SetName()
+    {
+        Debug.Log($"SetName() called. isClientInitialized: {IsClientInitialized}, Owner: {Owner}");
+        
+        if (IsClientInitialized)
+        {
+            if (Owner == null)
+            {
+                Debug.LogError("Owner is NULL when calling SetPlayerUsernameServerRpc!");
+                return;
+            }
+
+            SetPlayerUsernameServerRpc(Owner);
+        }
+    }*/
 
     /*public void OnClientConnected(int clientId)
     {
@@ -60,7 +93,7 @@ public class LobbyNetworker : NetworkBehaviour
         {
             var lobbyPlayer = player.GetComponent<LobbyPlayer>();
             if(lobbyPlayer != null && conn.ClientId == lobbyPlayer.clientId) {
-                
+
                 if(lobbyPlayer.readyStatus == false) {
                     lobbyPlayer.readyStatus = true;
                     Debug.Log($"Player {lobbyPlayer.clientId} is now READY.");
@@ -71,4 +104,16 @@ public class LobbyNetworker : NetworkBehaviour
             }
         }
     }
+
+    /*[ServerRpc(RequireOwnership = false)]
+    public void SetPlayerUsernameServerRpc(NetworkConnection conn)
+    {
+        foreach (var player in lobbyManager.playersInLobby)
+        {
+            var lobbyPlayer = player.GetComponent<LobbyPlayer>();
+            if(lobbyPlayer != null && conn.ClientId == lobbyPlayer.clientId) {
+                lobbyPlayer.username = lobbyManager.playerName;
+            }
+        }
+    }*/
 }
