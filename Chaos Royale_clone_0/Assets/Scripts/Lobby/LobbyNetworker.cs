@@ -10,11 +10,13 @@ using FishNet.Transporting;
 using FishNet.Object;
 using FishNet.Connection;
 using FishNet.Object.Synchronizing;
+using Unity.VisualScripting;
 
 public class LobbyNetworker : NetworkBehaviour
 {
     public LobbyManager lobbyManager;
     public readonly SyncDictionary<int, string> playerNames = new SyncDictionary<int, string>();
+    public GameObject playerPrefab;
 
     public override void OnStartClient()
 {
@@ -23,7 +25,9 @@ public class LobbyNetworker : NetworkBehaviour
     lobbyManager = FindObjectOfType<LobbyManager>();
     lobbyManager.lobbyNetworker = this;
     Debug.Log("Client ID: " + NetworkManager.ClientManager.Connection.ClientId + " Name: " + lobbyManager.playerName);
-    bool hasClientId = false;
+
+    StartCoroutine(WaitForClientId());
+    /* bool hasClientId = false;
     while(!hasClientId) {
         if(NetworkManager.ClientManager.Connection.ClientId != -1) {
             hasClientId = true;
@@ -43,7 +47,7 @@ public class LobbyNetworker : NetworkBehaviour
                 Debug.LogError("Invalid ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
             }
         } 
-    } 
+    }  */
     
 
     if (lobbyManager == null)
@@ -53,6 +57,31 @@ public class LobbyNetworker : NetworkBehaviour
     else
     {
         lobbyManager.lobbyNetworker = this;
+    }
+}
+
+public IEnumerator WaitForClientId() {
+bool hasClientId = false;
+    while(!hasClientId) {
+        if(NetworkManager.ClientManager.Connection.ClientId != -1) {
+            hasClientId = true;
+            if (NetworkManager.ClientManager.Connection.ClientId != -1)
+                {
+                if (!playerNames.ContainsKey(NetworkManager.ClientManager.Connection.ClientId))
+                {
+                    playerNames.Add(NetworkManager.ClientManager.Connection.ClientId, lobbyManager.playerName);
+                }
+                else
+                {
+                    Debug.Log("Player already added with ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
+                }
+            }
+            else
+            {
+                Debug.LogError("Invalid ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
+            }
+        } 
+        yield return new WaitForEndOfFrame();
     }
 }
 
@@ -107,7 +136,13 @@ public class LobbyNetworker : NetworkBehaviour
     private void StartGame()
     {
         lobbyManager.StartGame();
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Game", UnityEngine.SceneManagement.LoadSceneMode.Single);
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) {
+        var playerInstance = Instantiate(playerPrefab);
+        Spawn(playerInstance);
     }
 
     /*public void SetName()

@@ -339,7 +339,7 @@ public class LobbyManager : MonoBehaviour
     }
 
     public void StartGame() {
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         DontDestroyOnLoad(LobbyNetworkerInstance);
     }
 
