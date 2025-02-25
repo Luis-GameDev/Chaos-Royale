@@ -5640,6 +5640,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   selectedCharacter: 
+  playerName: 
   items:
   - {fileID: 11400000, guid: 84fe8fb6d56308847ac41c69653d4008, type: 2}
   - {fileID: 11400000, guid: 1a30cd26da13f5f49ae5724b2622e0f5, type: 2}
@@ -5667,12 +5668,25 @@ MonoBehaviour:
   lobbyplayerPrefab: {fileID: 5845032788955733536, guid: 7cf0239c83f3db04f9c64328e88aae3f,
     type: 3}
   lobbyplayerSelection: {fileID: 6869059646695493377}
+  readyButton: {fileID: 0}
   isSelectingItemSlotIndex: 0
   healthText: {fileID: 6981522100187562178}
   damageText: {fileID: 8370241942625128940}
   speedText: {fileID: 4155155684910044018}
   castTimeText: {fileID: 8133177172017475748}
   cdrText: {fileID: 2022977012650066626}
+  playersInLobby: []
+  lobbyNetworker: {fileID: 0}
+  LobbyNetworkerInstance: {fileID: 0}
+  LobbyNetworkerPrefab: {fileID: 0}
+  login_nameInputField: {fileID: 0}
+  login_passwordInputfield: {fileID: 0}
+  loggedInScreen: {fileID: 0}
+  notLoggedInScreen: {fileID: 0}
+  databaseManager: {fileID: 0}
+  register_nameinputField: {fileID: 0}
+  register_passwordinputField: {fileID: 0}
+  register_passwordcheckinputField: {fileID: 0}
 --- !u!1 &4248746607460289143
 GameObject:
   m_ObjectHideFlags: 0

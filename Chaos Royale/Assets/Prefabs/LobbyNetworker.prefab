@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7220917958492162367}
   - component: {fileID: 441337634268200414}
-  - component: {fileID: 4520216782329646127}
+  - component: {fileID: 206482007445798583}
   m_Layer: 0
   m_Name: LobbyNetworker
   m_TagString: Untagged
@@ -46,10 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 4520216782329646127}
-  _networkObjectCache: {fileID: 4520216782329646127}
+  _addedNetworkObject: {fileID: 206482007445798583}
+  _networkObjectCache: {fileID: 0}
   lobbyManager: {fileID: 0}
---- !u!114 &4520216782329646127
+--- !u!114 &206482007445798583
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,8 +65,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
-  NetworkBehaviours:
-  - {fileID: 441337634268200414}
+  NetworkBehaviours: []
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -77,7 +76,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedValusSet: 1
+  _initializedValusSet: 0
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -92,12 +91,12 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 6
+  <PrefabId>k__BackingField: 65535
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 10058130797865786381
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
-    Position: {x: 318.13882, y: 253.56552, z: 9.608659}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    Scale: {x: 1, y: 1, z: 1}
-    IsValid: 1
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 0, y: 0, z: 0}
+    IsValid: 0

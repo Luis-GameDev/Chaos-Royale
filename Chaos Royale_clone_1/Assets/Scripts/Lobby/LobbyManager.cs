@@ -86,8 +86,9 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void AddPlayerToSelection(int clientId) {
+    public IEnumerator AddPlayerToSelection(int clientId) {
         Debug.Log("XXXXX ");
+        yield return new WaitForSeconds(0.5f);
         GameObject player = Instantiate(lobbyplayerPrefab, lobbyplayerSelection.transform);
         if(lobbyNetworker) {
             foreach(var playername in lobbyNetworker.playerNames) {
@@ -115,18 +116,18 @@ public class LobbyManager : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.E)) {
+         if(Input.GetKeyDown(KeyCode.E)) {
             PrintSyncDictionary();
-        }
+        } 
     }
 
-    void PrintSyncDictionary()
+     void PrintSyncDictionary()
 {
     foreach (var entry in lobbyNetworker.playerNames)
     {
         Debug.Log($"Key: {entry.Key}, Value: {entry.Value}");
     }
-}
+} 
 
     public void SetReadyLM() {
         lobbyNetworker.SetReady();
@@ -185,7 +186,7 @@ public class LobbyManager : MonoBehaviour
                 GameObject go = Instantiate(LobbyNetworkerPrefab);
                 LobbyNetworkerInstance = go;
                 lobbyNetworker = go.GetComponent<LobbyNetworker>();
-                lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
+                //lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
                 InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);
             }
 
@@ -204,7 +205,16 @@ public class LobbyManager : MonoBehaviour
         serverButtons.SetActive(false);
         
         lobbyNetworker = FindObjectOfType<LobbyNetworker>();
-        //lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
+        /*bool clientStarted = false;
+
+         while (!clientStarted)
+        {
+            if (InstanceFinder.ClientManager.Started)
+            {
+                clientStarted = true;
+                lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
+            }
+        } */
     }
 
     public void LeaveLobby() {
@@ -253,7 +263,7 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.Log($"Client {conn.ClientId} has joined the server!");
 
-            AddPlayerToSelection(conn.ClientId);
+            StartCoroutine(AddPlayerToSelection(conn.ClientId));
 
             if (LobbyNetworkerInstance == null)
             {
@@ -326,5 +336,14 @@ public class LobbyManager : MonoBehaviour
         castTimeText.text = "CTR: " + totalCastTimeReduction + "%";
         cdrText.text = "CDR: " + totalCDR + "%";
 
+    }
+
+    public void StartGame() {
+        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(LobbyNetworkerInstance);
+    }
+
+    public void StartGameButton() {
+        lobbyNetworker.StartGameServerRpc();
     }
 }

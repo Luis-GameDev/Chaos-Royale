@@ -7,33 +7,55 @@ using UnityEngine.UI;
 using FishNet;
 using FishNet.Managing;
 using FishNet.Transporting;
-using Unity.VisualScripting;
 using FishNet.Object;
 using FishNet.Connection;
 using FishNet.Object.Synchronizing;
 
 public class LobbyNetworker : NetworkBehaviour
 {
-    [SerializeField] public LobbyManager lobbyManager;
+    public LobbyManager lobbyManager;
     public readonly SyncDictionary<int, string> playerNames = new SyncDictionary<int, string>();
 
     public override void OnStartClient()
-    {
-        base.OnStartClient();
+{
+    base.OnStartClient();
 
-        lobbyManager = FindObjectOfType<LobbyManager>();
-        lobbyManager.lobbyNetworker = this;
-        if (lobbyManager == null)
-        {
-            Debug.LogError("LobbyManager not found in the scene.");
+    lobbyManager = FindObjectOfType<LobbyManager>();
+    lobbyManager.lobbyNetworker = this;
+    Debug.Log("Client ID: " + NetworkManager.ClientManager.Connection.ClientId + " Name: " + lobbyManager.playerName);
+    bool hasClientId = false;
+    while(!hasClientId) {
+        if(NetworkManager.ClientManager.Connection.ClientId != -1) {
+            hasClientId = true;
+            if (NetworkManager.ClientManager.Connection.ClientId != -1)
+                {
+                if (!playerNames.ContainsKey(NetworkManager.ClientManager.Connection.ClientId))
+                {
+                    playerNames.Add(NetworkManager.ClientManager.Connection.ClientId, lobbyManager.playerName);
+                }
+                else
+                {
+                    Debug.Log("Player already added with ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
+                }
+            }
+            else
+            {
+                Debug.LogError("Invalid ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
+            }
         } 
-        else
-        {
-            lobbyManager.lobbyNetworker = this;
-        }
+    } 
+    
 
-        //SetPlayerName(Owner);
+    if (lobbyManager == null)
+    {
+        Debug.LogError("LobbyManager not found in the scene.");
     }
+    else
+    {
+        lobbyManager.lobbyNetworker = this;
+    }
+}
+
 
     /*public void SetPlayerName(NetworkConnection conn) {
         playerNames.Add(conn.ClientId, lobbyManager.playerName);
@@ -58,6 +80,34 @@ public class LobbyNetworker : NetworkBehaviour
 
             SetPlayerReadyServerRpc(Owner);
         }
+    }
+
+    [ServerRpc(RequireOwnership = true)]
+    public void StartGameServerRpc()
+    {
+        /* if (lobbyManager.playersInLobby.Count <= 2)
+        {
+            Debug.Log("Not enough players to start the game.");
+            return;
+        }
+
+        foreach (var player in lobbyManager.playersInLobby)
+        {
+            if (player.GetComponent<LobbyPlayer>().readyStatus == false)
+            {
+                Debug.Log("Not all players are ready.");
+                return;
+            }
+        } */
+
+        StartGame();
+    }
+
+    [ObserversRpc]
+    private void StartGame()
+    {
+        lobbyManager.StartGame();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
     }
 
     /*public void SetName()
