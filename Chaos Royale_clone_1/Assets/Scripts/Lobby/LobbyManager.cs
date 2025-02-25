@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using FishNet;
 using FishNet.Transporting;
 using FishNet.Connection;
+using FishNet.Object;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject serverButtons;
     [SerializeField] private GameObject lobbyplayerPrefab;
     [SerializeField] private GameObject lobbyplayerSelection;
+    [SerializeField] private Button readyButton;
     public int isSelectingItemSlotIndex = 0;
 
     [Header("Stats")]
@@ -37,6 +39,7 @@ public class LobbyManager : MonoBehaviour
     [Header("Host")]
     public List<GameObject> playersInLobby = new List<GameObject>();
     public LobbyNetworker lobbyNetworker;
+    public GameObject LobbyNetworkerInstance;
 
     [Header("Login")]
     [SerializeField] private GameObject login_nameInputField;
@@ -51,7 +54,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject register_passwordcheckinputField;
 
     [SerializeField] private GameObject LobbyNetworkerPrefab;
-    private GameObject LobbyNetworkerInstance;
+    private bool ready = false;
 
     public void SelectItem(int index) {
         // show the item inventory and set the index to the index of the button this function was called from
@@ -101,6 +104,9 @@ public class LobbyManager : MonoBehaviour
     }
 
     void Update() {
+        if(!lobbyNetworker) {
+            lobbyNetworker = FindObjectOfType<LobbyNetworker>();
+        }
         foreach (var player in playersInLobby) {
             if (player.GetComponent<LobbyPlayer>().readyStatus == true) {
                 player.GetComponent<Image>().color = Color.green;
@@ -124,6 +130,25 @@ public class LobbyManager : MonoBehaviour
 
     public void SetReadyLM() {
         lobbyNetworker.SetReady();
+        ready = !ready;
+        if (ready)
+        {
+            ColorBlock colors = readyButton.colors;
+            colors.normalColor = Color.green;
+            colors.highlightedColor = Color.green;
+            colors.pressedColor = Color.green;
+            colors.selectedColor = Color.green;
+            readyButton.colors = colors;
+        }
+        else
+        {
+            ColorBlock colors = readyButton.colors;
+            colors.normalColor = Color.red;
+            colors.highlightedColor = Color.red;
+            colors.pressedColor = Color.red;
+            colors.selectedColor = Color.red;
+            readyButton.colors = colors;
+        }
     }
     
     public void RemovePlayerFromSelection(int clientId) {
@@ -179,7 +204,7 @@ public class LobbyManager : MonoBehaviour
         serverButtons.SetActive(false);
         
         lobbyNetworker = FindObjectOfType<LobbyNetworker>();
-        lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
+        //lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
     }
 
     public void LeaveLobby() {
@@ -221,21 +246,44 @@ public class LobbyManager : MonoBehaviour
     }
 
     private void OnClientConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
+{
+    if (args.ConnectionState == RemoteConnectionState.Started)
     {
-        if (args.ConnectionState == RemoteConnectionState.Started)
+        if (InstanceFinder.ServerManager.Started)
         {
-            Debug.Log($"XXXXXXXXXXXXXXXXXXXXXXXXX Client {conn.ClientId} has joined the server!");
+            Debug.Log($"Client {conn.ClientId} has joined the server!");
+
             AddPlayerToSelection(conn.ClientId);
-            if(conn.IsHost) {
-                InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);
+
+            if (LobbyNetworkerInstance == null)
+            {
+                Debug.LogError("LobbyNetworkerInstance is NULL!");
+                return;
+            }
+
+            NetworkObject lobbyNetObj = LobbyNetworkerInstance.GetComponent<NetworkObject>();
+            if (lobbyNetObj == null)
+            {
+                Debug.LogError("LobbyNetworkerInstance has NO NetworkObject component!");
+                return;
+            }
+
+            if (!lobbyNetObj.IsSpawned)
+            {
+                InstanceFinder.ServerManager.Spawn(lobbyNetObj);
+                Debug.Log("LobbyNetworkerInstance spawned for all clients.");
+            }
+            else
+            {
+                Debug.Log("LobbyNetworkerInstance already spawned. Forcing re-visibility for new client.");
+                lobbyNetObj.GiveOwnership(conn);  
             }
         }
-        if(args.ConnectionState == RemoteConnectionState.Stopped) 
-        {
-            Debug.Log($"XXXXXXXXXXXXXXXXXXXXXXXXX Client {conn.ClientId} has left the lobby!");
-            RemovePlayerFromSelection(conn.ClientId); 
-        }
     }
+}
+
+
+
 
     private void OnDestroy()
     {
