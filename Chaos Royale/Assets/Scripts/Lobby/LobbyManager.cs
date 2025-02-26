@@ -133,19 +133,7 @@ public class LobbyManager : MonoBehaviour
                 player.GetComponent<Image>().color = Color.red;
             }
         }
-
-         if(Input.GetKeyDown(KeyCode.E)) {
-            PrintSyncDictionary();
-        } 
     }
-
-     void PrintSyncDictionary()
-{
-    foreach (var entry in lobbyNetworker.playerNames)
-    {
-        Debug.Log($"Key: {entry.Key}, Value: {entry.Value}");
-    }
-} 
 
     public void SetReadyLM() {
         lobbyNetworker.SetReady();
@@ -210,7 +198,7 @@ public class LobbyManager : MonoBehaviour
             lobbyNetworker = go.GetComponent<LobbyNetworker>();
             //lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
             Debug.Log($"Spawning: {LobbyNetworkerInstance.name}");
-            InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);     
+            InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance, InstanceFinder.ClientManager.Connection);     
         }
     }
 

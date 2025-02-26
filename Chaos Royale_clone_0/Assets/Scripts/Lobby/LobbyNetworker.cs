@@ -12,6 +12,8 @@ using FishNet.Connection;
 using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
 using MySqlX.XDevAPI;
+using FishNet.Managing.Scened;
+
 
 public class LobbyNetworker : NetworkBehaviour
 {
@@ -136,10 +138,10 @@ bool hasClientId = false;
         }
     }
 
-    [ServerRpc(RequireOwnership = true)]
+    [ServerRpc(RequireOwnership = false)]
     public void StartGameServerRpc()
     {
-        /* if (lobbyManager.playersInLobby.Count <= 2)
+        if (lobbyManager.playersInLobby.Count < 2)
         {
             Debug.Log("Not enough players to start the game.");
             return;
@@ -147,27 +149,28 @@ bool hasClientId = false;
 
         foreach (var player in lobbyManager.playersInLobby)
         {
-            if (player.GetComponent<LobbyPlayer>().readyStatus == false)
+            if (player.GetComponent<LobbyPlayer>().readyStatus == false && player.GetComponent<LobbyPlayer>().clientId != InstanceFinder.ClientManager.Connection.ClientId)
             {
                 Debug.Log("Not all players are ready.");
                 return;
             }
-        } */
-
+        }
         StartGame();
     }
 
-    [ObserversRpc]
+    [Server]
     private void StartGame()
     {
-        lobbyManager.StartGame();
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Game", UnityEngine.SceneManagement.LoadSceneMode.Single);
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneLoadData sld = new SceneLoadData("Game");
+        sld.ReplaceScenes = ReplaceOption.All;
+
+        InstanceFinder.SceneManager.OnLoadEnd += OnSceneLoaded;
+        InstanceFinder.SceneManager.LoadGlobalScenes(sld);
     }
 
-    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) {
-        var playerInstance = Instantiate(playerPrefab);
-        Spawn(playerInstance);
+    private void OnSceneLoaded(SceneLoadEndEventArgs args)
+    {
+        Debug.Log("Scene Loaded");
     }
 
     [ServerRpc(RequireOwnership = false)]
