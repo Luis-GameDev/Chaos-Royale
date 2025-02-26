@@ -170,7 +170,24 @@ bool hasClientId = false;
 
     private void OnSceneLoaded(SceneLoadEndEventArgs args)
     {
+        InstanceFinder.SceneManager.OnLoadEnd -= OnSceneLoaded;
         Debug.Log("Scene Loaded");
+        foreach (NetworkConnection conn in InstanceFinder.ServerManager.Clients.Values)
+        {
+            Debug.Log("Player: "+ conn.ClientId);
+            SpawnPlayer(conn);
+        }
+    }
+
+    private void SpawnPlayer(NetworkConnection conn)
+    {
+        GameObject player = Instantiate(playerPrefab);
+        NetworkObject netObj = player.GetComponent<NetworkObject>();
+
+        if (netObj != null)
+        {
+            ServerManager.Spawn(player, conn);
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -301,11 +301,6 @@ public class LobbyManager : MonoBehaviour
 
     }
 
-    public void StartGame() {
-        //DontDestroyOnLoad(gameObject);
-        DontDestroyOnLoad(LobbyNetworkerInstance);
-    }
-
     public void StartGameButton() {
         lobbyNetworker.StartGameServerRpc();
     }
