@@ -104,6 +104,24 @@ public class LobbyManager : MonoBehaviour
         playersInLobby.Add(player);  
     }
 
+    private void OnClientConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args) {
+        if (args.ConnectionState == RemoteConnectionState.Started) {
+            if (InstanceFinder.ServerManager.Started) {
+                Debug.Log($"Client {conn.ClientId} has joined the server!");
+                StartCoroutine(AddPlayerToSelection(conn.ClientId));
+            }
+        }
+        if (args.ConnectionState == RemoteConnectionState.Stopped) {
+            RemovePlayerFromSelection(conn.ClientId);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (InstanceFinder.ServerManager != null)
+            InstanceFinder.ServerManager.OnRemoteConnectionState -= OnClientConnectionState;
+    }
+
     void Update() {
         if(!lobbyNetworker) {
             lobbyNetworker = FindObjectOfType<LobbyNetworker>();
@@ -180,17 +198,19 @@ public class LobbyManager : MonoBehaviour
 
         while(!Switch)
         {
-            if(InstanceFinder.ServerManager.Started)
+            if(!InstanceFinder.ServerManager.Started)
             {
-                Switch = !Switch;
-                GameObject go = Instantiate(LobbyNetworkerPrefab);
-                LobbyNetworkerInstance = go;
-                lobbyNetworker = go.GetComponent<LobbyNetworker>();
-                //lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
-                InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);
+                yield return new WaitForEndOfFrame();
+                continue;
             }
 
-            yield return new WaitForEndOfFrame();
+            Switch = !Switch;
+            GameObject go = Instantiate(LobbyNetworkerPrefab);
+            LobbyNetworkerInstance = go;
+            lobbyNetworker = go.GetComponent<LobbyNetworker>();
+            //lobbyNetworker.playerNames.Add(InstanceFinder.NetworkManager.ClientManager.Connection.ClientId, playerName);
+            Debug.Log($"Spawning: {LobbyNetworkerInstance.name}");
+            InstanceFinder.ServerManager.Spawn(LobbyNetworkerInstance);     
         }
     }
 
@@ -241,8 +261,8 @@ public class LobbyManager : MonoBehaviour
 
     void Start()
     {
-        databaseManager = transform.GetComponent<DatabaseManager>();
         InstanceFinder.ServerManager.OnRemoteConnectionState += OnClientConnectionState;
+        databaseManager = transform.GetComponent<DatabaseManager>();
 
         // populate the item inventory with all owned items
         foreach (Item item in items) {
@@ -255,51 +275,6 @@ public class LobbyManager : MonoBehaviour
         CalculateStats();
     }
 
-    private void OnClientConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
-{
-    if (args.ConnectionState == RemoteConnectionState.Started)
-    {
-        if (InstanceFinder.ServerManager.Started)
-        {
-            Debug.Log($"Client {conn.ClientId} has joined the server!");
-
-            StartCoroutine(AddPlayerToSelection(conn.ClientId));
-
-            if (LobbyNetworkerInstance == null)
-            {
-                Debug.LogError("LobbyNetworkerInstance is NULL!");
-                return;
-            }
-
-            NetworkObject lobbyNetObj = LobbyNetworkerInstance.GetComponent<NetworkObject>();
-            if (lobbyNetObj == null)
-            {
-                Debug.LogError("LobbyNetworkerInstance has NO NetworkObject component!");
-                return;
-            }
-
-            if (!lobbyNetObj.IsSpawned)
-            {
-                InstanceFinder.ServerManager.Spawn(lobbyNetObj);
-                Debug.Log("LobbyNetworkerInstance spawned for all clients.");
-            }
-            else
-            {
-                Debug.Log("LobbyNetworkerInstance already spawned. Forcing re-visibility for new client.");
-                lobbyNetObj.GiveOwnership(conn);  
-            }
-        }
-    }
-}
-
-
-
-
-    private void OnDestroy()
-    {
-        if (InstanceFinder.ServerManager != null)
-            InstanceFinder.ServerManager.OnRemoteConnectionState -= OnClientConnectionState;
-    }
 
     public void CalculateStats() {
         // calculate the stats of the player based on the selected items

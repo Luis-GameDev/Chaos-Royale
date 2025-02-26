@@ -11,6 +11,7 @@ using FishNet.Object;
 using FishNet.Connection;
 using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
+using MySqlX.XDevAPI;
 
 public class LobbyNetworker : NetworkBehaviour
 {
@@ -24,7 +25,8 @@ public class LobbyNetworker : NetworkBehaviour
 
     lobbyManager = FindObjectOfType<LobbyManager>();
     lobbyManager.lobbyNetworker = this;
-    Debug.Log("Client ID: " + NetworkManager.ClientManager.Connection.ClientId + " Name: " + lobbyManager.playerName);
+
+    playerNames.OnChange += InstantiatePlayerCard;
 
     StartCoroutine(WaitForClientId());
     /* bool hasClientId = false;
@@ -60,28 +62,33 @@ public class LobbyNetworker : NetworkBehaviour
     }
 }
 
+public void InstantiatePlayerCard(SyncDictionaryOperation op,
+    int key, string value, bool asServer){
+    Debug.Log("InstantiatePlayerCard() called.");
+    foreach (var player in playerNames)
+    {
+        Debug.Log("Playername: " + player.Value);
+    }
+}
+
 public IEnumerator WaitForClientId() {
 bool hasClientId = false;
     while(!hasClientId) {
-        if(NetworkManager.ClientManager.Connection.ClientId != -1) {
-            hasClientId = true;
-            if (NetworkManager.ClientManager.Connection.ClientId != -1)
-                {
-                if (!playerNames.ContainsKey(NetworkManager.ClientManager.Connection.ClientId))
-                {
-                    playerNames.Add(NetworkManager.ClientManager.Connection.ClientId, lobbyManager.playerName);
-                }
-                else
-                {
-                    Debug.Log("Player already added with ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
-                }
-            }
-            else
+        Debug.Log("Waiting for ClientId...");
+
+        if(NetworkManager.ClientManager.Connection.ClientId == -1)
             {
-                Debug.LogError("Invalid ClientId: " + NetworkManager.ClientManager.Connection.ClientId);
+                yield return new WaitForEndOfFrame();
+                continue;
             }
-        } 
-        yield return new WaitForEndOfFrame();
+
+
+        Debug.Log("Client ID: " + NetworkManager.ClientManager.Connection.ClientId + " Name: " + lobbyManager.playerName);
+
+        hasClientId = true;
+        AddPlayerToSyncDictionary(NetworkManager.ClientManager.Connection.ClientId, lobbyManager.playerName);
+
+        
     }
 }
 
@@ -94,20 +101,38 @@ bool hasClientId = false;
             }
         }
     }*/
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void AddPlayerToSyncDictionary(int clientId, string playerName)
+    {
+        Debug.Log($"AddPlayerToSyncDictionary player with ClientId: {clientId} and name: {playerName}");
+        if (!playerNames.ContainsKey(clientId))
+        {
+            AddPlayer(clientId, playerName);
+        }
+        else
+        {
+            Debug.Log("Player already added with ClientId: " + clientId);
+        }
+    }
+
+    [Server] public void AddPlayer(int client, string name) {
+        Debug.Log($"Adding player with ClientId: {client} and name: {name}");
+        playerNames.Add(client, name);
+        lobbyManager.AddPlayerToSelection(client);
+    }
 
     public void SetReady()
-    {
-        Debug.Log($"SetReady() called. isClientInitialized: {IsClientInitialized}, Owner: {Owner}");
-        
+    {        
         if (IsClientInitialized)
         {
-            if (Owner == null)
+            if (InstanceFinder.ClientManager.Connection.ClientId == -1)
             {
                 Debug.LogError("Owner is NULL when calling SetPlayerReadyServerRpc!");
                 return;
             }
 
-            SetPlayerReadyServerRpc(Owner);
+            SetPlayerReadyServerRpc(InstanceFinder.ClientManager.Connection.ClientId);
         }
     }
 
@@ -145,40 +170,16 @@ bool hasClientId = false;
         Spawn(playerInstance);
     }
 
-    /*public void SetName()
-    {
-        Debug.Log($"SetName() called. isClientInitialized: {IsClientInitialized}, Owner: {Owner}");
-        
-        if (IsClientInitialized)
-        {
-            if (Owner == null)
-            {
-                Debug.LogError("Owner is NULL when calling SetPlayerUsernameServerRpc!");
-                return;
-            }
-
-            SetPlayerUsernameServerRpc(Owner);
-        }
-    }*/
-
-    /*public void OnClientConnected(int clientId)
-    {
-        lobbyManager.AddPlayerToSelection(clientId);
-    }
-
-    public void OnClientDisconnected(int clientId)
-    {
-        lobbyManager.RemovePlayerFromSelection(clientId);
-    }*/
-
     [ServerRpc(RequireOwnership = false)]
-    public void SetPlayerReadyServerRpc(NetworkConnection conn)
+    public void SetPlayerReadyServerRpc(int clientId)
     {
+        Debug.Log("Set ready!!!!!!!!!!!!!!");
         foreach (var player in lobbyManager.playersInLobby)
         {
+            Debug.Log("Searching for player with client id..." + clientId);
             var lobbyPlayer = player.GetComponent<LobbyPlayer>();
-            if(lobbyPlayer != null && conn.ClientId == lobbyPlayer.clientId) {
-
+            if(lobbyPlayer != null && clientId == lobbyPlayer.clientId) {
+                Debug.Log("Found player...");
                 if(lobbyPlayer.readyStatus == false) {
                     lobbyPlayer.readyStatus = true;
                     Debug.Log($"Player {lobbyPlayer.clientId} is now READY.");
@@ -189,16 +190,4 @@ bool hasClientId = false;
             }
         }
     }
-
-    /*[ServerRpc(RequireOwnership = false)]
-    public void SetPlayerUsernameServerRpc(NetworkConnection conn)
-    {
-        foreach (var player in lobbyManager.playersInLobby)
-        {
-            var lobbyPlayer = player.GetComponent<LobbyPlayer>();
-            if(lobbyPlayer != null && conn.ClientId == lobbyPlayer.clientId) {
-                lobbyPlayer.username = lobbyManager.playerName;
-            }
-        }
-    }*/
 }
