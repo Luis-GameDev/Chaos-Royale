@@ -2,6 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using FishNet.Managing;
+using FishNet.Object;
+using FishNet.Managing.Client;
+using FishNet;
+using FishNet.Connection;
 
 [CreateAssetMenu(fileName = "New Rejuvenation", menuName = "Ability/Rejuvenation")]
 public class Rejuvenation : Ability
@@ -9,6 +14,7 @@ public class Rejuvenation : Ability
     
     private Character character;
     [SerializeField] private GameObject healPrefab;
+    [SerializeField] private AbilityServerRPC abilityServerRPC;
 
     public override void Use(GameObject caster) {
         
@@ -31,6 +37,8 @@ public class Rejuvenation : Ability
         character.CanMove = true;
         Vector3 position = character.player.GetCursorWorldPosition();
         position.y += 1.0f; 
-        Instantiate(healPrefab, position, Quaternion.identity);
+        abilityServerRPC = FindAnyObjectByType<AbilityServerRPC>();
+        abilityServerRPC.SpawnAetheruptionPrefab(healPrefab, position, Quaternion.identity, InstanceFinder.ClientManager.Connection);
+        //Instantiate(healPrefab, position, Quaternion.identity);
     }
 }

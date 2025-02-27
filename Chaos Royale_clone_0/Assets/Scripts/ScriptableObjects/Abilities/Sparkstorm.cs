@@ -2,6 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using FishNet.Managing;
+using FishNet.Object;
+using FishNet.Managing.Client;
+using FishNet;
+using FishNet.Connection;
 
 [CreateAssetMenu(fileName = "New Sparkstorm", menuName = "Ability/Sparkstorm")]
 public class Sparkstorm : Ability
@@ -9,6 +14,7 @@ public class Sparkstorm : Ability
     
     private Character character;
     [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private AbilityServerRPC abilityServerRPC;
 
     public override void Use(GameObject caster) {
         
@@ -28,10 +34,12 @@ public class Sparkstorm : Ability
     }
 
     private IEnumerator Execute() {
+        abilityServerRPC = FindAnyObjectByType<AbilityServerRPC>();
         character.CanMove = true;
         for (int i = 0; i < 6; i++) {
-            GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
-            projectile.GetComponent<ProjectileComponent>().direction = Quaternion.Euler(0, i * 60, 0) * Vector3.forward;
+            //GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
+            Vector3 direction = Quaternion.Euler(0, i * 60, 0) * Vector3.forward;
+            abilityServerRPC.SpawnLightningstrike(projectilePrefab, character.transform.position, Quaternion.identity, InstanceFinder.ClientManager.Connection, direction);
             yield return new WaitForSeconds(0.1f);
         }
     }

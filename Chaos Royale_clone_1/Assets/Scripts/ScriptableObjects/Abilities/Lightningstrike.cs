@@ -2,6 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using FishNet.Managing;
+using FishNet.Object;
+using FishNet.Managing.Client;
+using FishNet;
+using FishNet.Connection;
 
 [CreateAssetMenu(fileName = "New Lightningstrike", menuName = "Ability/Lightningstrike")]
 public class Lightningstrike : Ability
@@ -9,6 +14,8 @@ public class Lightningstrike : Ability
     
     private Character character;
     [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private AbilityServerRPC abilityServerRPC;
+
 
     public override void Use(GameObject caster) {
         
@@ -29,18 +36,24 @@ public class Lightningstrike : Ability
 
     private void Execute() {
         character.CanMove = true;
-        GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
+        //GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
 
-        ProjectileComponent projectileScript = projectile.GetComponent<ProjectileComponent>();
+        //ProjectileComponent projectileScript = projectile.GetComponent<ProjectileComponent>();
         Camera mainCam = GameObject.FindGameObjectWithTag("MainCam").GetComponent<Camera>();
         
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.up, character.transform.position);
+        Vector3 direction = Vector3.zero;
         if (plane.Raycast(ray, out float distance)) {
             Vector3 mousePosition = ray.GetPoint(distance);
-            Vector3 direction = (mousePosition - character.transform.position).normalized;
+            direction = (mousePosition - character.transform.position).normalized;
             direction.y = 0; // Ensure no vertical movement
-            projectileScript.direction = direction;
+            //projectileScript.direction = direction;
         }
+        abilityServerRPC = FindAnyObjectByType<AbilityServerRPC>();
+
+        if(!abilityServerRPC) return;
+        
+        abilityServerRPC.SpawnLightningstrike(projectilePrefab, character.transform.position, Quaternion.identity, InstanceFinder.ClientManager.Connection, direction);
     }
 }

@@ -32,7 +32,7 @@ public class ServerManager : NetworkBehaviour
         
     }
 
-    void Update()
+    void FixedUpdate()
     {
         matchTimeLeft.Value -= Time.deltaTime;
         matchTime = matchTimeLeft.Value;

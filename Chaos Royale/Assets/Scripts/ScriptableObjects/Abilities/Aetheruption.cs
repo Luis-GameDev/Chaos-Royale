@@ -2,6 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using FishNet.Object;
+using FishNet.Managing;
+using FishNet.Connection;
+using Unity.Mathematics;
+using FishNet;
 
 [CreateAssetMenu(fileName = "New Aetheruption", menuName = "Ability/Aetheruption")]
 public class Aetheruption : Ability
@@ -9,6 +14,7 @@ public class Aetheruption : Ability
     
     private Character character;
     [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private AbilityServerRPC abilityServerRPC;
 
     public override void Use(GameObject caster) {
         
@@ -31,6 +37,10 @@ public class Aetheruption : Ability
         character.CanMove = true;
         Vector3 position = character.player.GetCursorWorldPosition();
         position.y += 1.0f; 
-        Instantiate(explosionPrefab, position, Quaternion.identity);
+        abilityServerRPC = FindAnyObjectByType<AbilityServerRPC>();
+
+        if(!abilityServerRPC) return;
+
+        abilityServerRPC.SpawnAetheruptionPrefab(explosionPrefab, position, quaternion.identity, InstanceFinder.ClientManager.Connection);
     }
 }
