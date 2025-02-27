@@ -18,8 +18,9 @@ using FishNet.Managing.Scened;
 public class LobbyNetworker : NetworkBehaviour
 {
     public LobbyManager lobbyManager;
+    [SerializeField] private GameObject serverPrefab;
     public readonly SyncDictionary<int, string> playerNames = new SyncDictionary<int, string>();
-    public GameObject playerPrefab;
+   /*  public GameObject playerPrefab; */
 
     public override void OnStartClient()
 {
@@ -172,14 +173,16 @@ bool hasClientId = false;
     {
         InstanceFinder.SceneManager.OnLoadEnd -= OnSceneLoaded;
         Debug.Log("Scene Loaded");
-        foreach (NetworkConnection conn in InstanceFinder.ServerManager.Clients.Values)
+        GameObject server = Instantiate(serverPrefab);
+        Spawn(server, InstanceFinder.ClientManager.Connection);
+        /* foreach (NetworkConnection conn in InstanceFinder.ServerManager.Clients.Values)
         {
             Debug.Log("Player: "+ conn.ClientId);
             SpawnPlayer(conn);
-        }
+        } */
     }
 
-    private void SpawnPlayer(NetworkConnection conn)
+    /* private void SpawnPlayer(NetworkConnection conn)
     {
         GameObject player = Instantiate(playerPrefab);
         NetworkObject netObj = player.GetComponent<NetworkObject>();
@@ -188,7 +191,7 @@ bool hasClientId = false;
         {
             ServerManager.Spawn(player, conn);
         }
-    }
+    } */
 
     [ServerRpc(RequireOwnership = false)]
     public void SetPlayerReadyServerRpc(int clientId)

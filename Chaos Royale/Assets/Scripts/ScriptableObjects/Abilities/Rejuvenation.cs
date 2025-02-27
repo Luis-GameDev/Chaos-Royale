@@ -38,7 +38,7 @@ public class Rejuvenation : Ability
         Vector3 position = character.player.GetCursorWorldPosition();
         position.y += 1.0f; 
         abilityServerRPC = FindAnyObjectByType<AbilityServerRPC>();
-        abilityServerRPC.SpawnAetheruptionPrefab(healPrefab, position, Quaternion.identity, InstanceFinder.ClientManager.Connection);
+        abilityServerRPC.SpawnStaticPrefab(healPrefab, position, Quaternion.identity, InstanceFinder.ClientManager.Connection);
         //Instantiate(healPrefab, position, Quaternion.identity);
     }
 }

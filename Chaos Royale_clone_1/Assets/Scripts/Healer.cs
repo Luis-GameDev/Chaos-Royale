@@ -21,7 +21,7 @@ public class Healer : Character
         Agent = GetComponent<NavMeshAgent>();
         Name = _name;
         MovementSpeed = _movementSpeed;
-        Health = _health;
+        Health.Value = _health;
         MaxHealth = _health;
         Abilities = _abilities;
         CanMove = true;
@@ -72,9 +72,5 @@ public class Healer : Character
         }
 
         //Debug.Log(globalCooldownLeft);
-    }
-
-    public Healer() {
-        
     }
 }

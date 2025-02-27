@@ -39,7 +39,7 @@ public class Sparkstorm : Ability
         for (int i = 0; i < 6; i++) {
             //GameObject projectile = Instantiate(projectilePrefab, character.transform.position, Quaternion.identity);
             Vector3 direction = Quaternion.Euler(0, i * 60, 0) * Vector3.forward;
-            abilityServerRPC.SpawnLightningstrike(projectilePrefab, character.transform.position, Quaternion.identity, InstanceFinder.ClientManager.Connection, direction);
+            abilityServerRPC.SpawnTransformPrefab(projectilePrefab, character.transform.position, Quaternion.identity, InstanceFinder.ClientManager.Connection, direction);
             yield return new WaitForSeconds(0.1f);
         }
     }

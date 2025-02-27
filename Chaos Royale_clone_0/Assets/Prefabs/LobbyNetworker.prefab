@@ -49,7 +49,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 206482007445798583}
   _networkObjectCache: {fileID: 206482007445798583}
   lobbyManager: {fileID: 0}
-  playerPrefab: {fileID: 2623969841688754171, guid: c7728be1203f1bb4d838a6bfbc004825,
+  serverPrefab: {fileID: 5647271288618823485, guid: e06e3148c139a7b49a59785c2e4a0765,
     type: 3}
 --- !u!114 &206482007445798583
 MonoBehaviour:
