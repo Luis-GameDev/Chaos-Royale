@@ -30,9 +30,10 @@ public class HealComponent : MonoBehaviour
     }
 
     private IEnumerator ExecuteHealEverySecond() {
+        ServerManager serverManager = FindObjectOfType<ServerManager>();
         while(lifetime > 0) {
             foreach(Character character in characters) {
-                character.Heal(healPerSecond);
+                serverManager.HealPlayer(healPerSecond, character);
             }
             yield return new WaitForSeconds(1.0f);
         }

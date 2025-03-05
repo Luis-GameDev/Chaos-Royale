@@ -13,6 +13,7 @@ public abstract class Character : NetworkBehaviour {
     public string Name { get; set; }
     public GameObject winScreen;
     public GameObject loseScreen;
+    public int clientId;
     public readonly SyncVar<int> Health = new SyncVar<int>();
     public int MaxHealth { get; set; }
     public float MovementSpeed { get; set; }
@@ -42,7 +43,7 @@ public abstract class Character : NetworkBehaviour {
         } 
     }
 
-    public virtual void TakeDamage(int damage) {
+    /* public virtual void TakeDamage(int damage) {
         Debug.Log("Taking damage " + Health.Value);
         combatTimeLeft = combatTime;
         
@@ -59,7 +60,7 @@ public abstract class Character : NetworkBehaviour {
         }
 
         HPbar.fillAmount = (float)Health.Value / MaxHealth;
-    }
+    } */
 
     public void WinMatch()
     {
@@ -67,7 +68,7 @@ public abstract class Character : NetworkBehaviour {
         winScreen.SetActive(true);
     }
 
-    public virtual void Heal(int health) {
+    /* public virtual void Heal(int health) {
         if (Health.Value + health < MaxHealth) {
             Health.Value += health;
         } else {
@@ -76,6 +77,6 @@ public abstract class Character : NetworkBehaviour {
 
         if(!HPbar) return;
         HPbar.fillAmount = (float)Health.Value / MaxHealth;
-    }
+    } */
 }
 

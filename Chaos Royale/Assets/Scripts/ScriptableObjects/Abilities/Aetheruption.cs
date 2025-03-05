@@ -41,6 +41,6 @@ public class Aetheruption : Ability
 
         if(!abilityServerRPC) return;
 
-        abilityServerRPC.SpawnStaticPrefab(explosionPrefab, position, quaternion.identity, InstanceFinder.ClientManager.Connection);
+        abilityServerRPC.SpawnStaticPrefab(character, explosionPrefab, position, quaternion.identity, InstanceFinder.ClientManager.Connection);
     }
 }

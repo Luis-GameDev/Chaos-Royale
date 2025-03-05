@@ -15,6 +15,7 @@ public class Melee : Character
     [SerializeField] private float _movementSpeed = 3f;
     [SerializeField] private List<Ability> _abilities;
     [SerializeField] private float _combatTime = 10.0f;
+    private ServerManager serverManager;
 
     public void Awake() {
         Agent = GetComponent<NavMeshAgent>();
@@ -26,6 +27,7 @@ public class Melee : Character
         CanMove = true;
         player = GetComponent<Player>();
         combatTime = _combatTime;
+        serverManager = FindObjectOfType<ServerManager>();
     }
 
     void FixedUpdate() {
@@ -33,7 +35,7 @@ public class Melee : Character
             combatTimeLeft -= Time.deltaTime;
         } else {
             combatTimeLeft = 0;
-            Heal(1);
+            serverManager.HealPlayer(1, this);
         }
     }
     void Update() {
@@ -67,14 +69,6 @@ public class Melee : Character
             ability3Cooldown -= Time.deltaTime;
         } else {
             ability3Cooldown = 0;
-        }
-
-        //Debug.Log(globalCooldownLeft);
-
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Space pressed");
-            TakeDamage(100);
         }
     }
 }

@@ -6,6 +6,7 @@ public class ProjectileComponent : MonoBehaviour
 {
     public bool isStatic = false;
     public bool isPiercing = false;
+    public Character owner;
     public int damage = 100;
     public float speed = 3.0f;
     public float range = 10.0f;
@@ -32,12 +33,27 @@ public class ProjectileComponent : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other) {
-        if(other.gameObject.tag == "Player") {
+        if(other.gameObject.tag == "Player" && other.gameObject.GetComponent<Character>() != owner) {
             Debug.Log("Hit player");
-            other.gameObject.GetComponent<Character>().TakeDamage(damage);
+            Character character = other.gameObject.GetComponent<Character>();
+            ServerManager serverManager = FindObjectOfType<ServerManager>();
+            serverManager.DamagePlayer(damage, character);
             if (!isPiercing) {
                 Destroy(gameObject);
             }
         }
     }
+
+    /* void OnCollisionEnter(Collision other)
+    {
+        if(other.gameObject.tag == "Player" && other.gameObject.GetComponent<Character>() != owner){
+            Debug.Log("Hit player");
+            Character character = other.gameObject.GetComponent<Character>();
+            ServerManager serverManager = FindObjectOfType<ServerManager>();
+            serverManager.DamagePlayer(damage, character);
+            if (!isPiercing) {
+                Destroy(gameObject);
+            }
+        }
+    } */
 }

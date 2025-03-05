@@ -54,6 +54,6 @@ public class Lightningstrike : Ability
 
         if(!abilityServerRPC) return;
 
-        abilityServerRPC.SpawnTransformPrefab(projectilePrefab, character.transform.position, Quaternion.identity, InstanceFinder.ClientManager.Connection, direction);
+        abilityServerRPC.SpawnTransformPrefab(character, projectilePrefab, character.transform.position, Quaternion.identity, InstanceFinder.ClientManager.Connection, direction);
     }
 }

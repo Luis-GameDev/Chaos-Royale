@@ -16,6 +16,7 @@ public class Healer : Character
     [SerializeField] private List<Ability> _abilities;
     [SerializeField] private Image _hpBar;
     [SerializeField] private float _combatTime = 10.0f;
+    private ServerManager serverManager;
 
     public void Awake() {
         Agent = GetComponent<NavMeshAgent>();
@@ -28,6 +29,7 @@ public class Healer : Character
         HPbar = _hpBar;
         player = GetComponent<Player>();
         combatTime = _combatTime;
+        serverManager = FindObjectOfType<ServerManager>();
     }
 
     void FixedUpdate() {
@@ -35,7 +37,7 @@ public class Healer : Character
             combatTimeLeft -= Time.deltaTime;
         } else {
             combatTimeLeft = 0;
-            Heal(1);
+            serverManager.HealPlayer(1, this);
         }
     }
     void Update() {

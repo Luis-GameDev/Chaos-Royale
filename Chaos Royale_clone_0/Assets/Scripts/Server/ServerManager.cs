@@ -32,6 +32,37 @@ public class ServerManager : NetworkBehaviour
             Instance = this;
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void DamagePlayer(int damage, Character player) {
+        Debug.Log("Taking damage " + player.Health.Value);
+        player.combatTimeLeft = player.combatTime;
+        
+        if (player.Health.Value - damage > 0) {
+            player.Health.Value -= damage;
+        } else {
+            player.Health.Value = 0;
+
+            player.loseScreen = GameObject.FindWithTag("PlayerUI").GetComponent<BackToLobby>().loseScreen;
+            player.loseScreen.SetActive(true);
+            Despawn(gameObject);
+            PlayerDeath(player.clientId);
+        }
+
+        player.HPbar.fillAmount = (float)player.Health.Value / player.MaxHealth;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void HealPlayer(int health, Character player) {
+        if (player.Health.Value + health < player.MaxHealth) {
+            player.Health.Value += health;
+        } else {
+            player.Health.Value = player.MaxHealth;
+        }
+
+        if(!player.HPbar) return;
+        player.HPbar.fillAmount = (float)player.Health.Value / player.MaxHealth;
+    }
+
     void Start()
     {
         matchId = CreateMatchEntry();
@@ -85,6 +116,7 @@ public class ServerManager : NetworkBehaviour
     {
         GameObject player = Instantiate(playerPrefab);
         Character charComponent = player.GetComponent<Character>();
+        charComponent.clientId = conn.ClientId;
         players.Add(conn.ClientId, charComponent);
 
         NetworkObject netObj = player.GetComponent<NetworkObject>();

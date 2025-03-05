@@ -55,7 +55,7 @@ public class Player : NetworkBehaviour
         gameObject.GetComponent<PlayerHighlight>().playerCamera = cam;
         character.HPbar = camHold.GetComponentsInChildren<Image>().FirstOrDefault(img => img.gameObject.name == "HP");
     }
-
+    
     void UpdateCameras() {
         if(!character) {
             character = gameObject.GetComponent<Character>();
